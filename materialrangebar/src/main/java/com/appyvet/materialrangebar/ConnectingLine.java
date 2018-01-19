@@ -16,7 +16,10 @@ package com.appyvet.materialrangebar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Shader;
 
 /**
  * Class representing the blue connecting line between the two thumbs.
@@ -29,6 +32,8 @@ public class ConnectingLine {
 
     private final float mY;
 
+    private int colorStart, colorEnd;
+
     // Constructor /////////////////////////////////////////////////////////////
 
     /**
@@ -37,16 +42,18 @@ public class ConnectingLine {
      * @param ctx                  the context for the line
      * @param y                    the y co-ordinate for the line
      * @param connectingLineWeight the weight of the line
-     * @param connectingLineColor  the color of the line
+     * @param connectingLineColorStart  the color of the line
      */
     public ConnectingLine(Context ctx, float y, float connectingLineWeight,
-            int connectingLineColor) {
+            int connectingLineColorStart, int colorEnd) {
 
-        final Resources res = ctx.getResources();
+        //final Resources res = ctx.getResources();
 
         // Initialize the paint, set values
         mPaint = new Paint();
-        mPaint.setColor(connectingLineColor);
+        //mPaint.setColor(connectingLineColorStart);
+        this.colorStart = connectingLineColorStart;
+        this.colorEnd = colorEnd;
         mPaint.setStrokeWidth(connectingLineWeight);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setAntiAlias(true);
@@ -64,6 +71,8 @@ public class ConnectingLine {
      * @param rightThumb the right thumb
      */
     public void draw(Canvas canvas, PinView leftThumb, PinView rightThumb) {
+        Shader shader = new LinearGradient(leftThumb.getX(), 0, rightThumb.getX(), 0, colorStart/*Color.parseColor("#aa00ff00")*/, colorEnd/*Color.parseColor("#ffff0000")*/, Shader.TileMode.CLAMP);
+        mPaint.setShader(shader);
         canvas.drawLine(leftThumb.getX(), mY, rightThumb.getX(), mY, mPaint);
     }
 

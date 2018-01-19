@@ -120,6 +120,8 @@ public class RangeBar extends View {
     private float mConnectingLineWeight = DEFAULT_CONNECTING_LINE_WEIGHT_DP;
 
     private int mConnectingLineColor = DEFAULT_CONNECTING_LINE_COLOR;
+    private int mConnectingLineColorStart = mConnectingLineColor;
+    private int mConnectingLineColorEnd = mConnectingLineColor;
 
     private float mThumbRadiusDP = DEFAULT_EXPANDED_PIN_RADIUS_DP;
 
@@ -399,7 +401,7 @@ public class RangeBar extends View {
 
         // Create the line connecting the two thumbs.
         mConnectingLine = new ConnectingLine(ctx, yPos, mConnectingLineWeight,
-                mConnectingLineColor);
+                mConnectingLineColorStart, mConnectingLineColorEnd);
     }
 
     @Override
@@ -1140,8 +1142,9 @@ public class RangeBar extends View {
             mTickColor = ta.getColor(R.styleable.RangeBar_mrb_tickColor, DEFAULT_TICK_COLOR);
             mActiveTickColor = mTickColor;
 
-            mConnectingLineColor = ta.getColor(R.styleable.RangeBar_mrb_connectingLineColor,
-                    DEFAULT_CONNECTING_LINE_COLOR);
+            mConnectingLineColor = ta.getColor(R.styleable.RangeBar_mrb_connectingLineColor, DEFAULT_CONNECTING_LINE_COLOR);
+            mConnectingLineColorStart = ta.getColor(R.styleable.RangeBar_mrb_connectingLineColorStart, DEFAULT_CONNECTING_LINE_COLOR);
+            mConnectingLineColorEnd = ta.getColor(R.styleable.RangeBar_mrb_connectingLineColorEnd, DEFAULT_CONNECTING_LINE_COLOR);
             mActiveConnectingLineColor = mConnectingLineColor;
 
 
@@ -1184,7 +1187,7 @@ public class RangeBar extends View {
         mConnectingLine = new ConnectingLine(getContext(),
                 getYPos(),
                 mConnectingLineWeight,
-                mConnectingLineColor);
+                mConnectingLineColorStart, mConnectingLineColorEnd);
         invalidate();
     }
 
