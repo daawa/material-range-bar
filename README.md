@@ -1,7 +1,13 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-MaterialRangeBar-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1272)
 
+
+## 2018.1.20 update
+
 - `connectingLine` 可设置渐变色；
+
 - PinView 可定制
+
+    定制的view 是始终垂直居中的； 可通过调整view的内部结构以及 underlying-bar 的 padding-bottom 值来设置其相对位置
 
 MaterialRangeBar
 =======
