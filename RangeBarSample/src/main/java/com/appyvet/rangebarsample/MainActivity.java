@@ -2,6 +2,7 @@
 package com.appyvet.rangebarsample;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -82,6 +83,15 @@ public class MainActivity extends Activity implements
 
         // Gets the RangeBar
         rangebar = (RangeBar) findViewById(R.id.rangebar1);
+        TextView view  = new TextView(this);
+        view.setText("TE");
+        view.setBackgroundColor(Color.BLUE);
+        rangebar.setCustomLeftThumb(view);
+
+        TextView right  = new TextView(this);
+        right.setText("TE");
+        right.setBackgroundColor(Color.GREEN);
+        rangebar.setCustomRightThumb(right);
 
         rangeButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -2,10 +2,8 @@ package com.appyvet.materialrangebar;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 
@@ -19,13 +17,13 @@ public class CustomPinView  extends PinView {
 
     public CustomPinView(Context context, View cv) {
         super(context);
-        //this.customView = customView;
-        TextView view  = new TextView(context);
-        view.setText("TE");
-        view.setBackgroundColor(Color.BLUE);
-        this.customView = view;
-        this.customView.measure(MeasureSpec.makeMeasureSpec(700, UNSPECIFIED),MeasureSpec.makeMeasureSpec(300, UNSPECIFIED));
-        this.customView.layout(100, 100, 100 + customView.getMeasuredWidth(), 100 + customView.getMeasuredHeight());
+        this.customView = cv;
+//        TextView view  = new TextView(context);
+//        view.setText("TE");
+//        view.setBackgroundColor(Color.BLUE);
+//        this.customView = view;
+        this.customView.measure(MeasureSpec.makeMeasureSpec(1000, UNSPECIFIED),MeasureSpec.makeMeasureSpec(1000, UNSPECIFIED));
+        this.customView.layout(100, 200, 100 + customView.getMeasuredWidth(), 100 + customView.getMeasuredHeight());
     }
 
     @Override
@@ -56,7 +54,7 @@ public class CustomPinView  extends PinView {
     public void setX(float x) {
         super.setX(x);
         int left = (int)x;
-        customView.layout(left,100, left + customView.getMeasuredWidth(), 100 + customView.getMeasuredHeight());
+        customView.layout(left,120, left + customView.getMeasuredWidth(), 120 + customView.getMeasuredHeight());
         customView.invalidate();
     }
 

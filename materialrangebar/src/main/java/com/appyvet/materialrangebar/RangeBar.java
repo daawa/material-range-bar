@@ -361,16 +361,26 @@ public class RangeBar extends View {
 
         final float yPos = h - mBarPaddingBottom;
         if (mIsRangeBar) {
-//            mLeftThumb = new InnerPinView(ctx);
-//            mLeftThumb.setFormatter(mFormatter);
-//            ((InnerPinView)mLeftThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-//                    mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
-        mLeftThumb = new CustomPinView(ctx, null);
+            if (customLeftThumb != null) {
+                mLeftThumb = new CustomPinView(ctx, customLeftThumb);
+            } else {
+                mLeftThumb = new InnerPinView(ctx);
+                mLeftThumb.setFormatter(mFormatter);
+                ((InnerPinView) mLeftThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
+                        mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+
+            }
         }
-        mRightThumb = new InnerPinView(ctx);
-        mRightThumb.setFormatter(mFormatter);
-        ((InnerPinView)mRightThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-                mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+
+        if (customRightThumb != null) {
+            mRightThumb = new CustomPinView(ctx, customRightThumb);
+        } else {
+            mRightThumb = new InnerPinView(ctx);
+            mRightThumb.setFormatter(mFormatter);
+            ((InnerPinView) mRightThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
+                    mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+
+        }
 
         // Create the underlying bar.
         final float marginLeft = Math.max(mExpandedPinRadius, mCircleSize);
@@ -1200,15 +1210,23 @@ public class RangeBar extends View {
         float yPos = getYPos();
 
         if (mIsRangeBar) {
-//            mLeftThumb = new InnerPinView(ctx);
-//            ((InnerPinView)mLeftThumb).init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
-//                    mMinPinFont, mMaxPinFont, false);
-            mLeftThumb = new CustomPinView(ctx,null);
+            if (customLeftThumb != null) {
+                mLeftThumb = new CustomPinView(ctx, customLeftThumb);
+            } else {
+                mLeftThumb = new InnerPinView(ctx);
+                ((InnerPinView) mLeftThumb).init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
+                        mMinPinFont, mMaxPinFont, false);
+            }
         }
-        mRightThumb = new InnerPinView(ctx);
-        ((InnerPinView)mRightThumb)
-                .init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize
-                        , mMinPinFont, mMaxPinFont, false);
+
+        if (customRightThumb != null) {
+            mRightThumb = new CustomPinView(ctx, customRightThumb);
+        } else {
+            mRightThumb = new InnerPinView(ctx);
+            ((InnerPinView) mRightThumb)
+                    .init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize
+                            , mMinPinFont, mMaxPinFont, false);
+        }
 
         float marginLeft = getMarginLeft();
         float barLength = getBarLength();
@@ -1542,4 +1560,13 @@ public class RangeBar extends View {
     }
 
 
+    View customLeftThumb, customRightThumb;
+
+    public void setCustomLeftThumb(View v) {
+        customLeftThumb = v;
+    }
+
+    public void setCustomRightThumb(View v) {
+        customRightThumb = v;
+    }
 }
