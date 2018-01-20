@@ -1,5 +1,8 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-MaterialRangeBar-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1272)
 
+- `connectingLine` 可设置渐变色；
+- PinView 可定制
+
 MaterialRangeBar
 =======
 MaterialRangeBar is a fork from https://github.com/edmodo/range-bar that adds some basic material styling, as well as start and end values, values as floats and some other things. It is aiming to mimic this:
