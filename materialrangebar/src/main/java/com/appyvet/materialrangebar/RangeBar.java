@@ -153,9 +153,9 @@ public class RangeBar extends View {
 
     private int mTickCount = (int) ((mTickEnd - mTickStart) / mTickInterval) + 1;
 
-    private PinView mLeftThumb;
+    private AbstractPinView mLeftThumb;
 
-    private PinView mRightThumb;
+    private AbstractPinView mRightThumb;
 
     private Bar mBar;
 
@@ -361,14 +361,15 @@ public class RangeBar extends View {
 
         final float yPos = h - mBarPaddingBottom;
         if (mIsRangeBar) {
-            mLeftThumb = new PinView(ctx);
-            mLeftThumb.setFormatter(mFormatter);
-            mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-                    mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+//            mLeftThumb = new InnerPinView(ctx);
+//            mLeftThumb.setFormatter(mFormatter);
+//            ((InnerPinView)mLeftThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
+//                    mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+        mLeftThumb = new CustomPinView(ctx, null);
         }
-        mRightThumb = new PinView(ctx);
+        mRightThumb = new InnerPinView(ctx);
         mRightThumb.setFormatter(mFormatter);
-        mRightThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
+        ((InnerPinView)mRightThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
                 mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
 
         // Create the underlying bar.
@@ -1199,12 +1200,13 @@ public class RangeBar extends View {
         float yPos = getYPos();
 
         if (mIsRangeBar) {
-            mLeftThumb = new PinView(ctx);
-            mLeftThumb.init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
-                    mMinPinFont, mMaxPinFont, false);
+//            mLeftThumb = new InnerPinView(ctx);
+//            ((InnerPinView)mLeftThumb).init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
+//                    mMinPinFont, mMaxPinFont, false);
+            mLeftThumb = new CustomPinView(ctx,null);
         }
-        mRightThumb = new PinView(ctx);
-        mRightThumb
+        mRightThumb = new InnerPinView(ctx);
+        ((InnerPinView)mRightThumb)
                 .init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize
                         , mMinPinFont, mMaxPinFont, false);
 
@@ -1372,7 +1374,7 @@ public class RangeBar extends View {
 
         // If the thumbs have switched order, fix the references.
         if (mIsRangeBar && mLeftThumb.getX() > mRightThumb.getX()) {
-            final PinView temp = mLeftThumb;
+            final AbstractPinView temp = mLeftThumb;
             mLeftThumb = mRightThumb;
             mRightThumb = temp;
         }
@@ -1416,7 +1418,7 @@ public class RangeBar extends View {
      *
      * @param thumb the thumb to press
      */
-    private void pressPin(final PinView thumb) {
+    private void pressPin(final AbstractPinView thumb) {
         if (mFirstSetTickCount) {
             mFirstSetTickCount = false;
         }
@@ -1443,7 +1445,7 @@ public class RangeBar extends View {
      *
      * @param thumb the thumb to release
      */
-    private void releasePin(final PinView thumb) {
+    private void releasePin(final AbstractPinView thumb) {
 
         final float nearestTickX = mBar.getNearestTickCoordinate(thumb);
         thumb.setX(nearestTickX);
@@ -1500,7 +1502,7 @@ public class RangeBar extends View {
      * @param thumb the thumb to move
      * @param x     the x-coordinate to move the thumb to
      */
-    private void movePin(PinView thumb, float x) {
+    private void movePin(AbstractPinView thumb, float x) {
 
         // If the user has moved their finger outside the range of the bar,
         // do not move the thumbs past the edge.
