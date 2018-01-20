@@ -1,6 +1,7 @@
 package com.appyvet.materialrangebar;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.view.View;
 
 /**
@@ -15,12 +16,12 @@ public abstract class PinView extends View {
     public abstract void setFormatter(com.appyvet.materialrangebar.IRangeBarFormatter mFormatter);
 
     /**
-     * Set size of the pin and padding for use when animating pin enlargement on press
+     * Set r of the pin and padding for use when animating pin enlargement on press
      *
-     * @param size    the size of the pin radius
-     * @param padding the size of the padding
+     * @param ratio    the zoom ratio of the pin radius
+     * @param padding the r of the padding
      */
-    public abstract void setSize(float size, float padding) ;
+    public abstract void setPinZoom(float ratio, float padding) ;
 
     /**
      * Release the pin, sets pressed state to false

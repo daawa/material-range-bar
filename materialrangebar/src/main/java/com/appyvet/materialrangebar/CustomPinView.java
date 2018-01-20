@@ -17,29 +17,43 @@ public class CustomPinView extends PinView {
     int barHeight;
     RangeBar bar;
     int topPosition;
-    public CustomPinView( View cv, RangeBar rangeBar) {
+
+    int width, height;
+
+    public CustomPinView(View cv, RangeBar rangeBar) {
         super(rangeBar.getContext());
         this.bar = rangeBar;
         customView = cv;
         barHeight = bar.getHeight() > 0 ? bar.getHeight() : 1000;
-        layoutCustomView(barHeight);
-
+        layoutCustomView(barHeight, barHeight, MeasureSpec.AT_MOST);
+        width = customView.getWidth();
+        height = customView.getHeight();
+        bar.setPinViewStubRadius(width / 2);
         bar.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 barHeight = bar.getHeight() > 0 ? bar.getHeight() : 1000;
-                layoutCustomView(barHeight);
+                layoutCustomView(barHeight, barHeight, MeasureSpec.AT_MOST);
+                width = customView.getWidth();
+                height = customView.getHeight();
+                bar.setPinViewStubRadius(width / 2);
             }
         });
     }
 
-    private void layoutCustomView(int size) {
-        customView.measure(MeasureSpec.makeMeasureSpec(size, UNSPECIFIED), MeasureSpec.makeMeasureSpec(size, UNSPECIFIED));
+    private void layoutCustomView(int w, int h, int mode) {
+        if (w == customView.getWidth() && h == customView.getHeight()) {
+            return;
+        }
+        int oldw = customView.getWidth();
 
+        customView.measure(MeasureSpec.makeMeasureSpec(w, mode), MeasureSpec.makeMeasureSpec(h, mode));
         topPosition = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
         topPosition = topPosition > 0 ? topPosition : 0;
         int left = customView.getLeft() > 0 ? customView.getLeft() : bar.getPaddingLeft();
+        left -= (customView.getMeasuredWidth() - oldw)/2;
         this.customView.layout(left, topPosition, left + customView.getMeasuredWidth(), topPosition + customView.getMeasuredHeight());
+
     }
 
     @Override
@@ -48,8 +62,8 @@ public class CustomPinView extends PinView {
     }
 
     @Override
-    public void setSize(float size, float padding) {
-        layoutCustomView((int)size);
+    public void setPinZoom(float zoom, float padding) {
+        layoutCustomView((int) (width * zoom), (int) (height * zoom), MeasureSpec.EXACTLY);
     }
 
     @Override
@@ -69,15 +83,15 @@ public class CustomPinView extends PinView {
 
     @Override
     public void setX(float x) {
-        super.setX(x);
-        int left = (int) x;
+
+        int left = (int) x - customView.getWidth()/2;
         customView.layout(left, topPosition, left + customView.getMeasuredWidth(), topPosition + customView.getMeasuredHeight());
         customView.invalidate();
     }
 
     @Override
     public float getX() {
-        float x = super.getX();
+        float x = customView.getLeft() + customView.getWidth()/2;
         Log.w("getx", "x :" + x);
         return x;
     }

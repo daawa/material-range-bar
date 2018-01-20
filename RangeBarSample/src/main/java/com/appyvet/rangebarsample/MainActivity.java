@@ -84,12 +84,12 @@ public class MainActivity extends Activity implements
         // Gets the RangeBar
         rangebar = (RangeBar) findViewById(R.id.rangebar1);
         TextView view  = new TextView(this);
-        view.setText("TE");
+        view.setText("TETTT");
         view.setBackgroundColor(Color.BLUE);
         rangebar.setCustomLeftThumb(view);
 
         TextView right  = new TextView(this);
-        right.setText("TE");
+        right.setText("TETTT");
         right.setBackgroundColor(Color.GREEN);
         rangebar.setCustomRightThumb(right);
 

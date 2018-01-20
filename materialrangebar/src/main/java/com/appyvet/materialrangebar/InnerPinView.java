@@ -235,12 +235,12 @@ class InnerPinView extends PinView {
     /**
      * Set size of the pin and padding for use when animating pin enlargement on press
      *
-     * @param size    the size of the pin radius
+     * @param zoom    the zoom ratio of the pin radius
      * @param padding the size of the padding
      */
-    public void setSize(float size, float padding) {
+    public void setPinZoom(float zoom, float padding) {
         mPinPadding = (int) padding;
-        mPinRadiusPx = (int) size;
+        mPinRadiusPx = (int) (zoom * mPinRadiusPx);
         invalidate();
     }
 
