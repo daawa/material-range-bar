@@ -153,9 +153,9 @@ public class RangeBar extends View {
 
     private int mTickCount = (int) ((mTickEnd - mTickStart) / mTickInterval) + 1;
 
-    private AbstractPinView mLeftThumb;
+    private PinView mLeftThumb;
 
-    private AbstractPinView mRightThumb;
+    private PinView mRightThumb;
 
     private Bar mBar;
 
@@ -1374,7 +1374,7 @@ public class RangeBar extends View {
 
         // If the thumbs have switched order, fix the references.
         if (mIsRangeBar && mLeftThumb.getX() > mRightThumb.getX()) {
-            final AbstractPinView temp = mLeftThumb;
+            final PinView temp = mLeftThumb;
             mLeftThumb = mRightThumb;
             mRightThumb = temp;
         }
@@ -1418,7 +1418,7 @@ public class RangeBar extends View {
      *
      * @param thumb the thumb to press
      */
-    private void pressPin(final AbstractPinView thumb) {
+    private void pressPin(final PinView thumb) {
         if (mFirstSetTickCount) {
             mFirstSetTickCount = false;
         }
@@ -1445,7 +1445,7 @@ public class RangeBar extends View {
      *
      * @param thumb the thumb to release
      */
-    private void releasePin(final AbstractPinView thumb) {
+    private void releasePin(final PinView thumb) {
 
         final float nearestTickX = mBar.getNearestTickCoordinate(thumb);
         thumb.setX(nearestTickX);
@@ -1502,7 +1502,7 @@ public class RangeBar extends View {
      * @param thumb the thumb to move
      * @param x     the x-coordinate to move the thumb to
      */
-    private void movePin(AbstractPinView thumb, float x) {
+    private void movePin(PinView thumb, float x) {
 
         // If the user has moved their finger outside the range of the bar,
         // do not move the thumbs past the edge.

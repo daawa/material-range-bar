@@ -7,8 +7,8 @@ import android.view.View;
  * Created by zhangzhenwei on 2018/1/19.
  */
 
-public abstract class AbstractPinView extends View {
-    public AbstractPinView(Context context) {
+public abstract class PinView extends View {
+    public PinView(Context context) {
         super(context);
     }
 

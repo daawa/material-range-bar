@@ -13,7 +13,7 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
  * Created by zhangzhenwei on 2018/1/19.
  */
 
-public class CustomPinView  extends AbstractPinView {
+public class CustomPinView  extends PinView {
     View customView;
     boolean isPressed;
 

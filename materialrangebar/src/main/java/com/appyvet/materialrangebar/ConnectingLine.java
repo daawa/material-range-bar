@@ -68,7 +68,7 @@ public class ConnectingLine {
      * @param leftThumb  the left thumb
      * @param rightThumb the right thumb
      */
-    public void draw(Canvas canvas, AbstractPinView leftThumb, AbstractPinView rightThumb) {
+    public void draw(Canvas canvas, PinView leftThumb, PinView rightThumb) {
         Shader shader = new LinearGradient(leftThumb.getX(), 0, rightThumb.getX(), 0, colorStart/*Color.parseColor("#aa00ff00")*/, colorEnd/*Color.parseColor("#ffff0000")*/, Shader.TileMode.CLAMP);
         mPaint.setShader(shader);
         canvas.drawLine(leftThumb.getX(), mY, rightThumb.getX(), mY, mPaint);
@@ -81,7 +81,7 @@ public class ConnectingLine {
      * @param rightThumb the right thumb
      * @param leftMargin the left margin
      */
-    public void draw(Canvas canvas, float leftMargin, AbstractPinView rightThumb) {
+    public void draw(Canvas canvas, float leftMargin, PinView rightThumb) {
         canvas.drawLine(leftMargin, mY, rightThumb.getX(), mY, mPaint);
     }
 }

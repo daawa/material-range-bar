@@ -29,7 +29,7 @@ import android.util.TypedValue;
  * Represents a thumb in the RangeBar slider. This is the handle for the slider
  * that is pressed and slid.
  */
-class InnerPinView extends AbstractPinView {
+class InnerPinView extends PinView {
 
     // Private Constants ///////////////////////////////////////////////////////
 
