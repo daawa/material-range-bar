@@ -1,11 +1,8 @@
 package com.appyvet.materialrangebar;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.View;
-
-import static android.view.View.MeasureSpec.UNSPECIFIED;
 
 /**
  * Created by zhangzhenwei on 2018/1/19.
@@ -16,7 +13,7 @@ public class CustomPinView extends PinView {
     boolean isPressed;
     int barHeight;
     RangeBar bar;
-    int topPosition;
+    //int topPosition;
 
     int width, height;
 
@@ -46,13 +43,14 @@ public class CustomPinView extends PinView {
             return;
         }
         int oldw = customView.getWidth();
-
+        int oldh = customView.getHeight();
         customView.measure(MeasureSpec.makeMeasureSpec(w, mode), MeasureSpec.makeMeasureSpec(h, mode));
-        topPosition = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
-        topPosition = topPosition > 0 ? topPosition : 0;
+//        topPosition = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
+//        topPosition = topPosition > 0 ? topPosition : 0;
         int left = customView.getLeft() > 0 ? customView.getLeft() : bar.getPaddingLeft();
-        left -= (customView.getMeasuredWidth() - oldw)/2;
-        this.customView.layout(left, topPosition, left + customView.getMeasuredWidth(), topPosition + customView.getMeasuredHeight());
+        left -= (customView.getMeasuredWidth() - oldw) / 2;
+        int top = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
+        this.customView.layout(left, top, left + customView.getMeasuredWidth(), top + customView.getMeasuredHeight());
 
     }
 
@@ -84,14 +82,14 @@ public class CustomPinView extends PinView {
     @Override
     public void setX(float x) {
 
-        int left = (int) x - customView.getWidth()/2;
-        customView.layout(left, topPosition, left + customView.getMeasuredWidth(), topPosition + customView.getMeasuredHeight());
+        int left = (int) x - customView.getWidth() / 2;
+        customView.layout(left, customView.getTop(), left + customView.getMeasuredWidth(), customView.getTop() + customView.getMeasuredHeight());
         customView.invalidate();
     }
 
     @Override
     public float getX() {
-        float x = customView.getLeft() + customView.getWidth()/2;
+        float x = customView.getLeft() + customView.getWidth() / 2;
         Log.w("getx", "x :" + x);
         return x;
     }

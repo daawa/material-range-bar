@@ -24,7 +24,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/rangebar1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         app:mrb_pinMaxFont="10sp"
         app:mrb_rangeBarPaddingBottom="20dp"
         app:mrb_selectorBoundaryColor="@color/accent"

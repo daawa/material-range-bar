@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -86,12 +87,17 @@ public class MainActivity extends Activity implements
         TextView view  = new TextView(this);
         view.setText("TETTT");
         view.setBackgroundColor(Color.BLUE);
-        rangebar.setCustomLeftThumb(view);
+
+        View v = LayoutInflater.from(this).inflate(R.layout.view_custom, null);
+        rangebar.setCustomLeftThumb(v);
 
         TextView right  = new TextView(this);
         right.setText("TETTT");
         right.setBackgroundColor(Color.GREEN);
-        rangebar.setCustomRightThumb(right);
+
+        v = LayoutInflater.from(this).inflate(R.layout.view_custom, null);
+        v.setBackgroundColor(Color.CYAN);
+        rangebar.setCustomRightThumb(v);
 
         rangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
