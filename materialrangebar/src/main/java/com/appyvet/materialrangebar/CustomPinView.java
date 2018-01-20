@@ -11,19 +11,35 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
  * Created by zhangzhenwei on 2018/1/19.
  */
 
-public class CustomPinView  extends PinView {
+public class CustomPinView extends PinView {
     View customView;
     boolean isPressed;
+    int barHeight;
+    RangeBar bar;
+    int topPosition;
+    public CustomPinView( View cv, RangeBar rangeBar) {
+        super(rangeBar.getContext());
+        this.bar = rangeBar;
+        customView = cv;
+        barHeight = bar.getHeight() > 0 ? bar.getHeight() : 1000;
+        layoutCustomView(barHeight);
 
-    public CustomPinView(Context context, View cv) {
-        super(context);
-        this.customView = cv;
-//        TextView view  = new TextView(context);
-//        view.setText("TE");
-//        view.setBackgroundColor(Color.BLUE);
-//        this.customView = view;
-        this.customView.measure(MeasureSpec.makeMeasureSpec(1000, UNSPECIFIED),MeasureSpec.makeMeasureSpec(1000, UNSPECIFIED));
-        this.customView.layout(100, 200, 100 + customView.getMeasuredWidth(), 100 + customView.getMeasuredHeight());
+        bar.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                barHeight = bar.getHeight() > 0 ? bar.getHeight() : 1000;
+                layoutCustomView(barHeight);
+            }
+        });
+    }
+
+    private void layoutCustomView(int size) {
+        customView.measure(MeasureSpec.makeMeasureSpec(size, UNSPECIFIED), MeasureSpec.makeMeasureSpec(size, UNSPECIFIED));
+
+        topPosition = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
+        topPosition = topPosition > 0 ? topPosition : 0;
+        int left = customView.getLeft() > 0 ? customView.getLeft() : bar.getPaddingLeft();
+        this.customView.layout(left, topPosition, left + customView.getMeasuredWidth(), topPosition + customView.getMeasuredHeight());
     }
 
     @Override
@@ -33,6 +49,7 @@ public class CustomPinView  extends PinView {
 
     @Override
     public void setSize(float size, float padding) {
+        layoutCustomView((int)size);
     }
 
     @Override
@@ -46,21 +63,21 @@ public class CustomPinView  extends PinView {
     }
 
     @Override
-    public boolean isPressed(){
-        return  isPressed;
+    public boolean isPressed() {
+        return isPressed;
     }
 
     @Override
     public void setX(float x) {
         super.setX(x);
-        int left = (int)x;
-        customView.layout(left,120, left + customView.getMeasuredWidth(), 120 + customView.getMeasuredHeight());
+        int left = (int) x;
+        customView.layout(left, topPosition, left + customView.getMeasuredWidth(), topPosition + customView.getMeasuredHeight());
         customView.invalidate();
     }
 
     @Override
     public float getX() {
-        float x =  super.getX();
+        float x = super.getX();
         Log.w("getx", "x :" + x);
         return x;
     }
@@ -73,13 +90,13 @@ public class CustomPinView  extends PinView {
 
     @Override
     public boolean isInTargetZone(float x, float y) {
-        boolean res =  (Math.abs(x - customView.getX()) <= customView.getMeasuredWidth()
-                && Math.abs(y - customView.getY() ) <= customView.getMeasuredHeight());
+        boolean res = (Math.abs(x - customView.getX()) <= customView.getMeasuredWidth()
+                && Math.abs(y - customView.getY()) <= customView.getMeasuredHeight());
         return res;
     }
 
     @Override
-    public void draw(Canvas canvas){
+    public void draw(Canvas canvas) {
         canvas.save();
         canvas.translate(customView.getLeft(), customView.getTop());
         customView.draw(canvas);
