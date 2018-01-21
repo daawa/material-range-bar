@@ -8,7 +8,7 @@ import android.view.View;
  * Created by zhangzhenwei on 2018/1/19.
  */
 
-public class CustomPinView extends PinView {
+class CustomPinView extends PinView {
     View customView;
     boolean isPressed;
     int barHeight;
