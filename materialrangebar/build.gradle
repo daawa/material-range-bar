@@ -7,6 +7,16 @@ apply plugin: 'com.android.library'
  ./gradlew createPom     // To create POM file for maven. if that creates a new file then dont add it to git
  ./gradlew bintrayUpload // To upload library to bintray
  */
+apply plugin: 'com.github.dcendents.android-maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://$projectDir/../repo")
+        }
+    }
+}
+
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'MaterialRangebar'
@@ -20,7 +30,7 @@ ext {
     siteUrl = 'https://github.com/oli107/material-range-bar'
     gitUrl = 'https://github.com/oli107/material-range-bar.git'
 
-    libraryVersion = '1.4.1'
+    libraryVersion = '1.4.2'
 
     developerId = 'krazykira'
     developerName = 'Sheraz Ahmed Khilji'

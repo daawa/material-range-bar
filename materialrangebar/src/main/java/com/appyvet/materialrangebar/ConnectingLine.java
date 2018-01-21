@@ -41,6 +41,7 @@ public class ConnectingLine {
      * @param y                    the y co-ordinate for the line
      * @param connectingLineWeight the weight of the line
      * @param connectingLineColorStart  the color of the line
+     * @param colorEnd the end color if connecting line is gradient
      */
     public ConnectingLine(Context ctx, float y, float connectingLineWeight,
             int connectingLineColorStart, int colorEnd) {

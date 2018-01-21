@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile project(':materialrangebar')
+//    compile project(':materialrangebar')
 //    compile 'com.appyvet:materialrangebar:1.4.1'
+    compile 'com.github.daawa:material-range-bar:1.4.2'
     compile 'com.android.support:cardview-v7:27.0.2'
 }
 android {
