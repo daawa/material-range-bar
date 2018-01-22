@@ -92,17 +92,17 @@ public class MainActivity extends Activity implements
 
         ViewGroup group = new FrameLayout(this);
 
-        View left = LayoutInflater.from(this).inflate(R.layout.view_custom, group, false);
+        View left = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_left, group, false);
 
 //        TextView right  = new TextView(this);
 //        right.setText("TETTT");
 //        right.setBackgroundColor(Color.GREEN);
 
-        View right = LayoutInflater.from(this).inflate(R.layout.view_custom, null);
+        View right = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_right, null);
         right.setBackgroundColor(Color.CYAN);
         rangebar.setCustomSelector(left, right);
 
-        rangebar.setTemporaryPinsSizeRatio(1.5f);
+        //rangebar.setTemporaryPinsSizeRatio(1.5f);
 
         rangeButton.setOnClickListener(new View.OnClickListener() {
             @Override

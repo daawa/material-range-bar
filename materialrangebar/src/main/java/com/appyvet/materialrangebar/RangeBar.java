@@ -1586,6 +1586,7 @@ public class RangeBar extends View {
     public void setCustomSelector(@Nullable View left, @Nullable View right) {
         customLeftThumb = left;
         customRightThumb = right;
+        setTemporaryPinsSizeRatio(zoomRatio);
         createPins();
     }
 
