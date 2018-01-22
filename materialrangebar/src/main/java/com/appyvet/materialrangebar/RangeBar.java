@@ -32,6 +32,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -1577,13 +1578,15 @@ public class RangeBar extends View {
 
     View customLeftThumb, customRightThumb;
 
-    public void setCustomLeftSelector(View v/*, int w, int  h*/) {
-        customLeftThumb = v;
-//        setTemporaryPinsSizeRatio(2.f);
-    }
-
-    public void setCustomRightSelector(View v) {
-        customRightThumb = v;
+    /**
+     * set custom selectors
+     * @param left the left selector view; if not range bar , just set it null
+     * @param right the right selector view
+     */
+    public void setCustomSelector(@Nullable View left, @Nullable View right) {
+        customLeftThumb = left;
+        customRightThumb = right;
+        createPins();
     }
 
     /**

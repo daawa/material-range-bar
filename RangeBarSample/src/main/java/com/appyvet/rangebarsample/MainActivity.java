@@ -9,8 +9,10 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -84,20 +86,22 @@ public class MainActivity extends Activity implements
 
         // Gets the RangeBar
         rangebar = (RangeBar) findViewById(R.id.rangebar1);
-        TextView view  = new TextView(this);
-        view.setText("TETTT");
-        view.setBackgroundColor(Color.BLUE);
+//        TextView view  = new TextView(this);
+//        view.setText("TETTT");
+//        view.setBackgroundColor(Color.BLUE);
 
-        View v = LayoutInflater.from(this).inflate(R.layout.view_custom, null);
-        rangebar.setCustomLeftSelector(v);
+        ViewGroup group = new FrameLayout(this);
 
-        TextView right  = new TextView(this);
-        right.setText("TETTT");
-        right.setBackgroundColor(Color.GREEN);
+        View left = LayoutInflater.from(this).inflate(R.layout.view_custom, group, false);
 
-        v = LayoutInflater.from(this).inflate(R.layout.view_custom, null);
-        v.setBackgroundColor(Color.CYAN);
-        rangebar.setCustomRightSelector(v);
+//        TextView right  = new TextView(this);
+//        right.setText("TETTT");
+//        right.setBackgroundColor(Color.GREEN);
+
+        View right = LayoutInflater.from(this).inflate(R.layout.view_custom, null);
+        right.setBackgroundColor(Color.CYAN);
+        rangebar.setCustomSelector(left, right);
+
         rangebar.setTemporaryPinsSizeRatio(1.5f);
 
         rangeButton.setOnClickListener(new View.OnClickListener() {

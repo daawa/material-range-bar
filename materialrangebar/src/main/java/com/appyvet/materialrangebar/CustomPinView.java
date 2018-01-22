@@ -3,6 +3,7 @@ package com.appyvet.materialrangebar;
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Created by zhangzhenwei on 2018/1/19.
@@ -11,9 +12,9 @@ import android.view.View;
 class CustomPinView extends PinView {
     View customView;
     boolean isPressed;
-    int barHeight;
+    int layoutWidth, widMode = MeasureSpec.AT_MOST;
+    int layoutHeight, heightMode = MeasureSpec.AT_MOST;
     RangeBar bar;
-    //int topPosition;
 
     int width, height;
 
@@ -21,29 +22,67 @@ class CustomPinView extends PinView {
         super(rangeBar.getContext());
         this.bar = rangeBar;
         customView = cv;
-        barHeight = bar.getHeight() > 0 ? bar.getHeight() : 1000;
-        layoutCustomView(barHeight, barHeight, MeasureSpec.AT_MOST);
-        width = customView.getWidth();
-        height = customView.getHeight();
-        bar.setPinViewStubRadius(width / 2);
+
+        firstLayout();
+
         bar.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                barHeight = bar.getHeight() > 0 ? bar.getHeight() : 1000;
-                layoutCustomView(barHeight, barHeight, MeasureSpec.AT_MOST);
+                firstLayout();
+                /*
+                layoutWidth = bar.getHeight() > 0 ? bar.getHeight() : 10000;
+                layoutHeight = bar.getWidth() > 0? bar.getWidth() : 10000;
+
+                if(customView.getLayoutParams() != null){
+                    ViewGroup.LayoutParams params = customView.getLayoutParams();
+                    if(params.width > 0){
+                        layoutHeight = params.width;
+                        widMode = MeasureSpec.EXACTLY;
+                    }
+                    if(params.height > 0){
+                        layoutWidth = params.height;
+                        heightMode = MeasureSpec.EXACTLY;
+                    }
+                }
+
+                layoutCustomView(layoutHeight, widMode, layoutWidth, heightMode);
+
                 width = customView.getWidth();
                 height = customView.getHeight();
                 bar.setPinViewStubRadius(width / 2);
+                */
             }
         });
     }
 
-    private void layoutCustomView(int w, int h, int mode) {
+    private void firstLayout(){
+        layoutWidth = bar.getHeight() > 0 ? bar.getHeight() : 10000;
+        layoutHeight = bar.getWidth() > 0? bar.getWidth() : 10000;
+
+        if(customView.getLayoutParams() != null){
+            ViewGroup.LayoutParams params = customView.getLayoutParams();
+            if(params.width > 0){
+                layoutHeight = params.width;
+                widMode = MeasureSpec.EXACTLY;
+            }
+            if(params.height > 0){
+                layoutWidth = params.height;
+                heightMode = MeasureSpec.EXACTLY;
+            }
+        }
+
+        layoutCustomView(layoutHeight, widMode, layoutWidth, heightMode);
+        width = customView.getWidth();
+        height = customView.getHeight();
+        bar.setPinViewStubRadius(width / 2);
+    }
+
+    private void layoutCustomView(int w, int wm, int h, int hm) {
         if (w == customView.getWidth() && h == customView.getHeight()) {
             return;
         }
         int oldw = customView.getWidth();
-        customView.measure(MeasureSpec.makeMeasureSpec(w, mode), MeasureSpec.makeMeasureSpec(h, mode));
+        customView.measure(MeasureSpec.makeMeasureSpec(w, wm), MeasureSpec.makeMeasureSpec(h, hm));
         int left = customView.getLeft() > 0 ? customView.getLeft() : bar.getPaddingLeft();
         left -= (customView.getMeasuredWidth() - oldw) / 2;
         int top = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
@@ -58,7 +97,7 @@ class CustomPinView extends PinView {
 
     @Override
     public void setPinZoom(float zoom, float padding) {
-        layoutCustomView((int) (width * zoom), (int) (height * zoom), MeasureSpec.EXACTLY);
+        layoutCustomView((int) (width * zoom), MeasureSpec.EXACTLY, (int) (height * zoom), MeasureSpec.EXACTLY);
     }
 
     @Override
