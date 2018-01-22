@@ -126,7 +126,7 @@ class CustomPinView extends PinView {
     @Override
     public float getX() {
         float x = customView.getLeft() + customView.getWidth() / 2;
-        Log.w("getx", "x :" + x);
+        //Log.w("getx", "x :" + x);
         return x;
     }
 

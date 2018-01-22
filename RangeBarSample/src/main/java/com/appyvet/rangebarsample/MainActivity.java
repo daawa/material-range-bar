@@ -102,6 +102,7 @@ public class MainActivity extends Activity implements
         right.setBackgroundColor(Color.CYAN);
         rangebar.setCustomSelector(left, right);
 
+        rangebar.setTickConfig(5, 100000, 50);
         //rangebar.setTemporaryPinsSizeRatio(1.5f);
 
         rangeButton.setOnClickListener(new View.OnClickListener() {

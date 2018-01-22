@@ -529,6 +529,46 @@ public class RangeBar extends View {
         this.drawTicks = drawTicks;
     }
 
+    public void setTickConfig(float start, float end, float interval) {
+
+        int tickCount = (int) (Math.abs(end - start) / interval) + 1;
+        if (isValidTickCount(tickCount)) {
+            mTickCount = tickCount;
+            mTickStart = start;
+            mTickEnd = end;
+            mTickInterval = interval;
+
+            // Prevents resetting the indices when creating new activity, but
+            // allows it on the first setting.
+            if (mFirstSetTickCount) {
+                mLeftIndex = 0;
+                mRightIndex = mTickCount - 1;
+
+                if (mListener != null) {
+                    mListener.onRangeChangeListener(this, mLeftIndex, mRightIndex,
+                            getPinValue(mLeftIndex),
+                            getPinValue(mRightIndex));
+                }
+            }
+            if (indexOutOfRange(mLeftIndex, mRightIndex)) {
+                mLeftIndex = 0;
+                mRightIndex = mTickCount - 1;
+
+                if (mListener != null) {
+                    mListener.onRangeChangeListener(this, mLeftIndex, mRightIndex,
+                            getPinValue(mLeftIndex),
+                            getPinValue(mRightIndex));
+                }
+            }
+
+            createBar();
+            createPins();
+        } else {
+            Log.e(TAG, "tickCount less than 2; invalid tickCount.");
+            throw new IllegalArgumentException("tickCount less than 2; invalid tickCount.");
+        }
+    }
+
     /**
      * Sets the start tick in the RangeBar.
      *
@@ -1462,7 +1502,7 @@ public class RangeBar extends View {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float val = (Float) (animation.getAnimatedValue());
-                    float zoom = val/pinViewStubRadius;
+                    float zoom = val / pinViewStubRadius;
                     thumb.setPinZoom(zoom, mPinPadding * animation.getAnimatedFraction());
                     invalidate();
                 }
@@ -1493,7 +1533,7 @@ public class RangeBar extends View {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float val = (Float) (animation.getAnimatedValue());
-                    float zoom = val/pinViewStubRadius;
+                    float zoom = val / pinViewStubRadius;
                     thumb.setPinZoom(zoom, mPinPadding - (mPinPadding * animation.getAnimatedFraction()));
                     invalidate();
                 }
@@ -1580,7 +1620,8 @@ public class RangeBar extends View {
 
     /**
      * set custom selectors
-     * @param left the left selector view; if not range bar , just set it null
+     *
+     * @param left  the left selector view; if not range bar , just set it null
      * @param right the right selector view
      */
     public void setCustomSelector(@Nullable View left, @Nullable View right) {
@@ -1592,12 +1633,13 @@ public class RangeBar extends View {
 
     /**
      * set the radius of  selector
+     *
      * @param r radius of selector
      */
     public void setPinViewStubRadius(int r) {
         pinViewStubRadius = r;
         createBar();
-        if(!mArePinsTemporary){
+        if (!mArePinsTemporary) {
             setTemporaryPinsSizeRatio(zoomRatio);
         }
     }
