@@ -12,61 +12,42 @@ import android.view.ViewGroup;
 class CustomPinView extends PinView {
     View customView;
     boolean isPressed;
-    int layoutWidth, widMode = MeasureSpec.AT_MOST;
-    int layoutHeight, heightMode = MeasureSpec.AT_MOST;
+
+    int layoutWidth = ViewGroup.LayoutParams.WRAP_CONTENT, widMode = MeasureSpec.UNSPECIFIED;
+    int layoutHeight = ViewGroup.LayoutParams.WRAP_CONTENT, heightMode = MeasureSpec.UNSPECIFIED;
+
     RangeBar bar;
 
     int width, height;
 
-    public CustomPinView(View cv, RangeBar rangeBar) {
+    public CustomPinView(View cv, ValueChanged listener, RangeBar rangeBar) {
         super(rangeBar.getContext());
+        this.listener = listener;
         this.bar = rangeBar;
         customView = cv;
 
         firstLayout();
 
-        bar.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                firstLayout();
-                /*
-                layoutWidth = bar.getHeight() > 0 ? bar.getHeight() : 10000;
-                layoutHeight = bar.getWidth() > 0? bar.getWidth() : 10000;
-
-                if(customView.getLayoutParams() != null){
-                    ViewGroup.LayoutParams params = customView.getLayoutParams();
-                    if(params.width > 0){
-                        layoutHeight = params.width;
-                        widMode = MeasureSpec.EXACTLY;
-                    }
-                    if(params.height > 0){
-                        layoutWidth = params.height;
-                        heightMode = MeasureSpec.EXACTLY;
-                    }
-                }
-
-                layoutCustomView(layoutHeight, widMode, layoutWidth, heightMode);
-
-                width = customView.getWidth();
-                height = customView.getHeight();
-                bar.setPinViewStubRadius(width / 2);
-                */
-            }
-        });
+//        bar.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+//            @Override
+//            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//                firstLayout();
+//            }
+//        });
     }
 
-    private void firstLayout(){
-        layoutWidth = bar.getHeight() > 0 ? bar.getHeight() : 10000;
-        layoutHeight = bar.getWidth() > 0? bar.getWidth() : 10000;
+    private void firstLayout() {
+//        layoutWidth = bar.getHeight() > 0 ? bar.getHeight() : 10000;
+//        layoutHeight = bar.getWidth() > 0 ? bar.getWidth() : 10000;
 
-        if(customView.getLayoutParams() != null){
+        if (customView.getLayoutParams() != null) {
             ViewGroup.LayoutParams params = customView.getLayoutParams();
-            if(params.width > 0){
-                layoutHeight = params.width;
+            if (params.width > 0) {
+                layoutWidth = params.width;
                 widMode = MeasureSpec.EXACTLY;
             }
-            if(params.height > 0){
-                layoutWidth = params.height;
+            if (params.height > 0) {
+                layoutHeight = params.height;
                 heightMode = MeasureSpec.EXACTLY;
             }
         }
@@ -130,10 +111,21 @@ class CustomPinView extends PinView {
         return x;
     }
 
+    String val;
 
     @Override
-    public void setXValue(String x) {
+    public void setValue(String x) {
+        val = x;
+    }
 
+    @Override
+    public String getValue() {
+        return val;
+    }
+
+    @Override
+    public void updateLayout() {
+        layoutCustomView(layoutWidth, widMode, layoutHeight, heightMode);
     }
 
     @Override

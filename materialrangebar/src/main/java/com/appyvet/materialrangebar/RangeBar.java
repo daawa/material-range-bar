@@ -363,7 +363,10 @@ public class RangeBar extends View {
         final float yPos = h - mBarPaddingBottom;
         if (mIsRangeBar) {
             if (customLeftThumb != null) {
-                mLeftThumb = new CustomPinView(customLeftThumb, this);
+                if(!(mLeftThumb instanceof CustomPinView)) {
+                    mLeftThumb = new CustomPinView(customLeftThumb, leftValListener, this);
+                }
+                mLeftThumb.updateLayout();
             } else {
                 mLeftThumb = new InnerPinView(ctx);
                 mLeftThumb.setFormatter(mFormatter);
@@ -373,7 +376,10 @@ public class RangeBar extends View {
         }
 
         if (customRightThumb != null) {
-            mRightThumb = new CustomPinView(customRightThumb, this);
+            if(!(mRightThumb instanceof CustomPinView)) {
+                mRightThumb = new CustomPinView(customRightThumb, rightValListener, this);
+            }
+            mRightThumb.updateLayout();
         } else {
             mRightThumb = new InnerPinView(ctx);
             mRightThumb.setFormatter(mFormatter);
@@ -1264,7 +1270,7 @@ public class RangeBar extends View {
 
         if (mIsRangeBar) {
             if (customLeftThumb != null) {
-                mLeftThumb = new CustomPinView(customLeftThumb, this);
+                mLeftThumb = new CustomPinView(customLeftThumb, leftValListener, this);
             } else {
                 mLeftThumb = new InnerPinView(ctx);
                 ((InnerPinView) mLeftThumb).init(ctx, yPos, 0, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
@@ -1273,7 +1279,7 @@ public class RangeBar extends View {
         }
 
         if (customRightThumb != null) {
-            mRightThumb = new CustomPinView(customRightThumb, this);
+            mRightThumb = new CustomPinView(customRightThumb, rightValListener, this);
         } else {
             mRightThumb = new InnerPinView(ctx);
             ((InnerPinView) mRightThumb)
@@ -1617,6 +1623,7 @@ public class RangeBar extends View {
 
 
     View customLeftThumb, customRightThumb;
+    PinView.ValueChanged leftValListener, rightValListener;
 
     /**
      * set custom selectors
@@ -1624,9 +1631,12 @@ public class RangeBar extends View {
      * @param left  the left selector view; if not range bar , just set it null
      * @param right the right selector view
      */
-    public void setCustomSelector(@Nullable View left, @Nullable View right) {
+    public void setCustomSelector(@Nullable View left, @Nullable PinView.ValueChanged leftValListener, @Nullable View right, @Nullable PinView.ValueChanged rightValListener ) {
         customLeftThumb = left;
+        this.leftValListener = leftValListener;
         customRightThumb = right;
+        this.rightValListener = rightValListener;
+
         setTemporaryPinsSizeRatio(zoomRatio);
         createPins();
     }

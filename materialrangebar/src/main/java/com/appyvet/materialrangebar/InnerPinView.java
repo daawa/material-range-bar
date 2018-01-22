@@ -208,7 +208,7 @@ class InnerPinView extends PinView {
      *
      * @param x String value of the pin
      */
-    public void setXValue(String x) {
+    public void setValue(String x) {
         mValue = x;
     }
 
@@ -311,5 +311,15 @@ class InnerPinView extends PinView {
             estimatedFontSize = mMaxPinFont;
         }
         paint.setTextSize(estimatedFontSize * mDensity);
+    }
+
+    @Override
+    public String getValue() {
+        return mValue;
+    }
+
+    @Override
+    public void updateLayout() {
+
     }
 }

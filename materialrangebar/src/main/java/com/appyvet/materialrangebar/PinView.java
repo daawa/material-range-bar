@@ -9,9 +9,12 @@ import android.view.View;
  */
 
 public abstract class PinView extends View {
+    protected ValueChanged listener;
+
     public PinView(Context context) {
         super(context);
     }
+
 
     public abstract void setFormatter(com.appyvet.materialrangebar.IRangeBarFormatter mFormatter);
 
@@ -38,7 +41,24 @@ public abstract class PinView extends View {
      *
      * @param x String value of the pin
      */
-    public abstract void setXValue(String x);
+    public final void setXValue(String x){
+        String old = getValue();
+        if(listener != null){
+            listener.onValueChanged(x);
+        }
+
+        setValue(x);
+        if(old == null || old.length() != (getValue() == null? "" : getValue()).length()){
+            updateLayout();
+        }
+    }
+
+
+
+    public abstract void setValue(String val);
+    public abstract String getValue();
+
+    public abstract void updateLayout();
 
     /**
      * Determines if the input coordinate is close enough to this thumb to
@@ -50,4 +70,8 @@ public abstract class PinView extends View {
      * false otherwise
      */
     public abstract boolean isInTargetZone(float x, float y);
+
+    public interface ValueChanged{
+        void onValueChanged(String value);
+    }
 }

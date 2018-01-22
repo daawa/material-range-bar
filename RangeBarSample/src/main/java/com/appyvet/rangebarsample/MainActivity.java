@@ -17,6 +17,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import com.appyvet.materialrangebar.PinView;
 import com.appyvet.materialrangebar.RangeBar;
 import com.appyvet.rangebarsample.colorpicker.ColorPickerDialog;
 import com.appyvet.rangebarsample.colorpicker.Utils;
@@ -92,17 +93,37 @@ public class MainActivity extends Activity implements
 
         ViewGroup group = new FrameLayout(this);
 
-        View left = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_left, group, false);
+        final View left = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_left, group, false);
 
 //        TextView right  = new TextView(this);
 //        right.setText("TETTT");
 //        right.setBackgroundColor(Color.GREEN);
 
-        View right = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_right, null);
+        final View right = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_right, group, false);
         right.setBackgroundColor(Color.CYAN);
-        rangebar.setCustomSelector(left, right);
+        rangebar.setCustomSelector(left, new PinView.ValueChanged() {
+            @Override
+            public void onValueChanged(String value) {
+                TextView t = left.findViewById(R.id.text);
+                t.setText("#" + value);
 
-        rangebar.setTickConfig(5, 100000, 50);
+            }
+        }, right, new PinView.ValueChanged() {
+            @Override
+            public void onValueChanged(String value) {
+                TextView t = right.findViewById(R.id.text);
+                t.setText("$" + value);
+            }
+        });
+
+        rangebar.setPinTextFormatter(new RangeBar.PinTextFormatter() {
+            @Override
+            public String getText(String value) {
+                return value;
+            }
+        });
+
+        rangebar.setTickConfig(5, 200000, 50);
         //rangebar.setTemporaryPinsSizeRatio(1.5f);
 
         rangeButton.setOnClickListener(new View.OnClickListener() {
