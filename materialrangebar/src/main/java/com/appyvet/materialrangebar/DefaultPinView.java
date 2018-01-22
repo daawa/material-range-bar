@@ -28,7 +28,7 @@ import android.util.TypedValue;
  * Represents a thumb in the RangeBar slider. This is the handle for the slider
  * that is pressed and slid.
  */
-class InnerPinView extends PinView {
+class DefaultPinView extends PinView {
 
     // Private Constants ///////////////////////////////////////////////////////
 
@@ -63,6 +63,7 @@ class InnerPinView extends PinView {
 
     private String mValue;
 
+    private int zoomedPinRadiusPx;
     // Radius of the new thumb if selected
     private int mPinRadiusPx;
 
@@ -96,7 +97,7 @@ class InnerPinView extends PinView {
 
     // Constructors ////////////////////////////////////////////////////////////
 
-    public InnerPinView(Context context) {
+    public DefaultPinView(Context context) {
         super(context);
     }
 
@@ -148,6 +149,8 @@ class InnerPinView extends PinView {
             mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pinRadiusDP,
                     mRes.getDisplayMetrics());
         }
+
+        zoomedPinRadiusPx = mPinRadiusPx;
         //Set text size in px from dp
         int textSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 15,
                 mRes.getDisplayMetrics());
@@ -239,7 +242,7 @@ class InnerPinView extends PinView {
      */
     public void setPinZoom(float zoom, float padding) {
         mPinPadding = (int) padding;
-        mPinRadiusPx = (int) (zoom * mPinRadiusPx);
+        zoomedPinRadiusPx = (int) (zoom * mPinRadiusPx);
         invalidate();
     }
 
@@ -273,10 +276,10 @@ class InnerPinView extends PinView {
 
         canvas.drawCircle(mX, mY, mCircleRadiusPx, mCirclePaint);
         //Draw pin if pressed
-        if (mPinRadiusPx > 0 && (mHasBeenPressed || !mPinsAreTemporary)) {
-            mBounds.set((int) mX - mPinRadiusPx,
-                    (int) mY - (mPinRadiusPx * 2) - (int) mPinPadding,
-                    (int) mX + mPinRadiusPx, (int) mY - (int) mPinPadding);
+        if (zoomedPinRadiusPx > 0 && (mHasBeenPressed || !mPinsAreTemporary)) {
+            mBounds.set((int) mX - zoomedPinRadiusPx,
+                    (int) mY - (zoomedPinRadiusPx * 2) - (int) mPinPadding,
+                    (int) mX + zoomedPinRadiusPx, (int) mY - (int) mPinPadding);
             mPin.setBounds(mBounds);
             String text = mValue;
 
@@ -290,7 +293,7 @@ class InnerPinView extends PinView {
             mPin.setColorFilter(mPinFilter);
             mPin.draw(canvas);
             canvas.drawText(text,
-                    mX, mY - mPinRadiusPx - mPinPadding + mTextYPadding,
+                    mX, mY - zoomedPinRadiusPx - mPinPadding + mTextYPadding,
                     mTextPaint);
         }
         super.draw(canvas);

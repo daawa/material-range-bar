@@ -62,10 +62,10 @@ class CustomPinView extends PinView {
         if (w == customView.getWidth() && h == customView.getHeight()) {
             return;
         }
-        int oldw = customView.getWidth();
+        int oldWidth = customView.getWidth();
         customView.measure(MeasureSpec.makeMeasureSpec(w, wm), MeasureSpec.makeMeasureSpec(h, hm));
         int left = customView.getLeft() > 0 ? customView.getLeft() : bar.getPaddingLeft();
-        left -= (customView.getMeasuredWidth() - oldw) / 2;
+        left -= (customView.getMeasuredWidth() - oldWidth) / 2;
         int top = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
         this.customView.layout(left, top, left + customView.getMeasuredWidth(), top + customView.getMeasuredHeight());
 

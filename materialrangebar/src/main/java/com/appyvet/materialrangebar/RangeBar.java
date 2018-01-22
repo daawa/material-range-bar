@@ -368,9 +368,9 @@ public class RangeBar extends View {
                 }
                 mLeftThumb.updateLayout();
             } else {
-                mLeftThumb = new InnerPinView(ctx);
+                mLeftThumb = new DefaultPinView(ctx);
                 mLeftThumb.setFormatter(mFormatter);
-                ((InnerPinView) mLeftThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, pinViewStubRadius,
+                ((DefaultPinView) mLeftThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, pinViewStubRadius,
                         mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
             }
         }
@@ -381,9 +381,9 @@ public class RangeBar extends View {
             }
             mRightThumb.updateLayout();
         } else {
-            mRightThumb = new InnerPinView(ctx);
+            mRightThumb = new DefaultPinView(ctx);
             mRightThumb.setFormatter(mFormatter);
-            ((InnerPinView) mRightThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, pinViewStubRadius,
+            ((DefaultPinView) mRightThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, pinViewStubRadius,
                     mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
         }
 
@@ -1272,8 +1272,8 @@ public class RangeBar extends View {
             if (customLeftThumb != null) {
                 mLeftThumb = new CustomPinView(customLeftThumb, leftValListener, this);
             } else {
-                mLeftThumb = new InnerPinView(ctx);
-                ((InnerPinView) mLeftThumb).init(ctx, yPos, 0, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
+                mLeftThumb = new DefaultPinView(ctx);
+                ((DefaultPinView) mLeftThumb).init(ctx, yPos, -1, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
                         mMinPinFont, mMaxPinFont, false);
             }
         }
@@ -1281,9 +1281,9 @@ public class RangeBar extends View {
         if (customRightThumb != null) {
             mRightThumb = new CustomPinView(customRightThumb, rightValListener, this);
         } else {
-            mRightThumb = new InnerPinView(ctx);
-            ((InnerPinView) mRightThumb)
-                    .init(ctx, yPos, 0, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize
+            mRightThumb = new DefaultPinView(ctx);
+            ((DefaultPinView) mRightThumb)
+                    .init(ctx, yPos, -1, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize
                             , mMinPinFont, mMaxPinFont, false);
         }
 

@@ -44,7 +44,7 @@ public abstract class PinView extends View {
     public final void setXValue(String x){
         String old = getValue();
         if(listener != null){
-            listener.onValueChanged(x);
+            x = listener.onValueChanged(x);
         }
 
         setValue(x);
@@ -52,8 +52,6 @@ public abstract class PinView extends View {
             updateLayout();
         }
     }
-
-
 
     public abstract void setValue(String val);
     public abstract String getValue();
@@ -72,6 +70,6 @@ public abstract class PinView extends View {
     public abstract boolean isInTargetZone(float x, float y);
 
     public interface ValueChanged{
-        void onValueChanged(String value);
+        String onValueChanged(String value);
     }
 }

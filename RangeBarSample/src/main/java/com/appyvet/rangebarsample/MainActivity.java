@@ -91,6 +91,7 @@ public class MainActivity extends Activity implements
 //        view.setText("TETTT");
 //        view.setBackgroundColor(Color.BLUE);
 
+        /*
         ViewGroup group = new FrameLayout(this);
 
         final View left = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_left, group, false);
@@ -101,20 +102,24 @@ public class MainActivity extends Activity implements
 
         final View right = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_right, group, false);
         right.setBackgroundColor(Color.CYAN);
-        rangebar.setCustomSelector(left, new PinView.ValueChanged() {
-            @Override
-            public void onValueChanged(String value) {
-                TextView t = left.findViewById(R.id.text);
-                t.setText("#" + value);
+        rangebar.setCustomSelector(
+                left, new PinView.ValueChanged() {
+                    @Override
+                    public String onValueChanged(String value) {
+                        TextView t = left.findViewById(R.id.text);
+                        t.setText("#" + value);
+                        return value;
 
-            }
-        }, right, new PinView.ValueChanged() {
-            @Override
-            public void onValueChanged(String value) {
-                TextView t = right.findViewById(R.id.text);
-                t.setText("$" + value);
-            }
-        });
+                    }
+                },
+                right, new PinView.ValueChanged() {
+                    @Override
+                    public String onValueChanged(String value) {
+                        TextView t = right.findViewById(R.id.text);
+                        t.setText("$" + value);
+                        return value;
+                    }
+                });
 
         rangebar.setPinTextFormatter(new RangeBar.PinTextFormatter() {
             @Override
@@ -124,7 +129,7 @@ public class MainActivity extends Activity implements
         });
 
         rangebar.setTickConfig(5, 200000, 50);
-        //rangebar.setTemporaryPinsSizeRatio(1.5f);
+        rangebar.setTemporaryPinsSizeRatio(1.5f); */
 
         rangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -395,8 +400,8 @@ public class MainActivity extends Activity implements
         });
 
     }
-    private int getValueInDP(int value)
-    {
+
+    private int getValueInDP(int value) {
         int valueInDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 value,
                 getResources().getDisplayMetrics());
