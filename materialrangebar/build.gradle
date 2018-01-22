@@ -30,7 +30,7 @@ ext {
     siteUrl = 'https://github.com/oli107/material-range-bar'
     gitUrl = 'https://github.com/oli107/material-range-bar.git'
 
-    libraryVersion = '1.4.2'
+    libraryVersion = '1.4.2-snapshot'
 
     developerId = 'krazykira'
     developerName = 'Sheraz Ahmed Khilji'

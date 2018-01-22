@@ -733,6 +733,7 @@ public class RangeBar extends View {
     }
 
     private float zoomRatio = 1.f;
+
     public void setTemporaryPinsSizeRatio(float ratio) {
         setTemporaryPins(false);
         zoomRatio = ratio;
@@ -1576,22 +1577,25 @@ public class RangeBar extends View {
 
     View customLeftThumb, customRightThumb;
 
-    public void setCustomLeftThumb(View v/*, int w, int  h*/) {
+    public void setCustomLeftSelector(View v/*, int w, int  h*/) {
         customLeftThumb = v;
-        setTemporaryPinsSizeRatio(2.f);
+//        setTemporaryPinsSizeRatio(2.f);
     }
 
-    public void setCustomRightThumb(View v) {
+    public void setCustomRightSelector(View v) {
         customRightThumb = v;
     }
 
+    /**
+     * set the radius of  selector
+     * @param r radius of selector
+     */
     public void setPinViewStubRadius(int r) {
         pinViewStubRadius = r;
         createBar();
         if(!mArePinsTemporary){
             setTemporaryPinsSizeRatio(zoomRatio);
         }
-
     }
 
     public static int dp2px(Context context, float dpValue) {

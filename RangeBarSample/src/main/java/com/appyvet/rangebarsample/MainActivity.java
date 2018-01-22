@@ -89,7 +89,7 @@ public class MainActivity extends Activity implements
         view.setBackgroundColor(Color.BLUE);
 
         View v = LayoutInflater.from(this).inflate(R.layout.view_custom, null);
-        rangebar.setCustomLeftThumb(v);
+        rangebar.setCustomLeftSelector(v);
 
         TextView right  = new TextView(this);
         right.setText("TETTT");
@@ -97,7 +97,8 @@ public class MainActivity extends Activity implements
 
         v = LayoutInflater.from(this).inflate(R.layout.view_custom, null);
         v.setBackgroundColor(Color.CYAN);
-        rangebar.setCustomRightThumb(v);
+        rangebar.setCustomRightSelector(v);
+        rangebar.setTemporaryPinsSizeRatio(1.5f);
 
         rangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
