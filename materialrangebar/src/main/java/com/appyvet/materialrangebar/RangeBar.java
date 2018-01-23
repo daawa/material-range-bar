@@ -358,7 +358,7 @@ public class RangeBar extends View {
 
         // Create the two thumb objects and position line in view
         float density = mDisplayMetrics.density;
-        float expandedPinRadius = mExpandedPinRadius / density;
+        float expandedPinRadius = mExpandedPinRadius;
 
         final float yPos = h - mBarPaddingBottom;
         if (mIsRangeBar) {
@@ -761,12 +761,17 @@ public class RangeBar extends View {
     }
 
 
+    private float zoomRatio = 1.f;
+    public void setTemporaryPinsSizeRatio(float ratio) {
+        zoomRatio = ratio;
+        mExpandedPinRadius = pinViewStubRadius * ratio;
+    }
+
     /**
-     * Set if the pins should dissapear after released
+     * Set if the pins should disappear after released
      *
-     * @param arePinsTemporary Boolean - true if pins shoudl dissapear after released, false to
-     *                         stay
-     *                         drawn
+     * @param arePinsTemporary Boolean - true if pins should disappear after released, false to
+     *                         stay drawn
      */
     public void setTemporaryPins(boolean arePinsTemporary) {
         mArePinsTemporary = arePinsTemporary;
@@ -779,13 +784,7 @@ public class RangeBar extends View {
         invalidate();
     }
 
-    private float zoomRatio = 1.f;
 
-    public void setTemporaryPinsSizeRatio(float ratio) {
-        setTemporaryPins(false);
-        zoomRatio = ratio;
-        mExpandedPinRadius = pinViewStubRadius * ratio;
-    }
 
 
     /**
@@ -1273,7 +1272,7 @@ public class RangeBar extends View {
                 mLeftThumb = new CustomPinView(customLeftThumb, leftValListener, this);
             } else {
                 mLeftThumb = new DefaultPinView(ctx);
-                ((DefaultPinView) mLeftThumb).init(ctx, yPos, -1, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
+                ((DefaultPinView) mLeftThumb).init(ctx, yPos, mExpandedPinRadius, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
                         mMinPinFont, mMaxPinFont, false);
             }
         }
@@ -1283,7 +1282,7 @@ public class RangeBar extends View {
         } else {
             mRightThumb = new DefaultPinView(ctx);
             ((DefaultPinView) mRightThumb)
-                    .init(ctx, yPos, -1, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize
+                    .init(ctx, yPos, mExpandedPinRadius, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize
                             , mMinPinFont, mMaxPinFont, false);
         }
 
@@ -1649,9 +1648,7 @@ public class RangeBar extends View {
     public void setPinViewStubRadius(int r) {
         pinViewStubRadius = r;
         createBar();
-        if (!mArePinsTemporary) {
-            setTemporaryPinsSizeRatio(zoomRatio);
-        }
+        setTemporaryPinsSizeRatio(zoomRatio);
     }
 
     public static int dp2px(Context context, float dpValue) {

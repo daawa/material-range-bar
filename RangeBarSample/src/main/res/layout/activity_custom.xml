@@ -24,18 +24,18 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/rangebar1"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="100dp"
+        app:mrb_barWeight="2dp"
+        app:mrb_connectingLineColorEnd="#fd2951"
+        app:mrb_connectingLineColorStart="#ffc0cc"
+        app:mrb_connectingLineWeight="4dp"
         app:mrb_pinMaxFont="10sp"
-        app:mrb_rangeBarPaddingBottom="20dp"
-        app:mrb_selectorBoundaryColor="@color/accent"
-        app:mrb_selectorBoundarySize="2dp"
-        app:mrb_pinTextColor="#ACD123"
-        app:mrb_selectorSize="10dp"
-        app:mrb_tickEnd="10"
+        app:mrb_rangeBarColor="#f0f0f0"
+        app:mrb_rangeBarPaddingBottom="50dp"
+        app:mrb_tickEnd="70"
+        app:mrb_tickHeight="0dp"
         app:mrb_tickInterval="1"
-        app:mrb_tickStart="5"
-        app:mrb_connectingLineColorStart="#11ff0000"
-        app:mrb_connectingLineColorEnd="#ffff0000"/>
+        app:mrb_tickStart="0" />
 
     <include
         layout="@layout/divider"

@@ -113,7 +113,7 @@ class DefaultPinView extends PinView {
      *
      * @param ctx                 Context
      * @param y                   The y coordinate to raw the pin (i.e. the bar location)
-     * @param pinRadiusDP         the initial size of the pin
+     * @param pinRadius        the initial size of the pin
      * @param pinColor            the color of the pin
      * @param textColor           the color of the value text in the pin
      * @param circleRadius        the radius of the selector circle
@@ -124,7 +124,7 @@ class DefaultPinView extends PinView {
      * @param maxFont             the maximum font size for the pin text
      * @param pinsAreTemporary    whether to show the pin initially or just the circle
      */
-    public void init(Context ctx, float y, float pinRadiusDP, int pinColor, int textColor,
+    public void init(Context ctx, float y, float pinRadius, int pinColor, int textColor,
                      float circleRadius, int circleColor, int circleBoundaryColor, float circleBoundarySize, float minFont, float maxFont, boolean pinsAreTemporary) {
 
         mRes = ctx.getResources();
@@ -142,12 +142,11 @@ class DefaultPinView extends PinView {
                 mRes.getDisplayMetrics());
         // If one of the attributes are set, but the others aren't, set the
         // attributes to default
-        if (pinRadiusDP == -1) {
+        if (pinRadius == -1) {
             mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_THUMB_RADIUS_DP,
                     mRes.getDisplayMetrics());
         } else {
-            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pinRadiusDP,
-                    mRes.getDisplayMetrics());
+            mPinRadiusPx = (int)pinRadius;// TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pinRadiusDP, mRes.getDisplayMetrics());
         }
 
         zoomedPinRadiusPx = mPinRadiusPx;

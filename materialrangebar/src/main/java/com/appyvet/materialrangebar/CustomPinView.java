@@ -52,7 +52,7 @@ class CustomPinView extends PinView {
             }
         }
 
-        layoutCustomView(layoutHeight, widMode, layoutWidth, heightMode);
+        layoutCustomView(layoutWidth, widMode, layoutHeight, heightMode);
         width = customView.getWidth();
         height = customView.getHeight();
         bar.setPinViewStubRadius(width / 2);
