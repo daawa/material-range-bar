@@ -117,7 +117,7 @@ public class CustomActivity extends Activity {
 
         rangebar.setTickConfig(5, 200000, 50);
         //rangebar.setTemporaryPinsSizeRatio(1.5f);
-        rangebar.setTemporaryPins(false);
+        //rangebar.setTemporaryPins(false);
 
         rangeButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -317,7 +317,8 @@ public class MainActivity extends Activity implements
         thumbRadiusSeek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar thumbRadiusSeek, int progress, boolean fromUser) {
-                rangebar.setPinRadius(getValueInDP(progress));
+                //todo:
+                //rangebar.setPinRadius(getValueInDP(progress));
                 thumbRadius.setText("Pin Radius = " + progress);
             }
 

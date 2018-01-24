@@ -25,7 +25,6 @@ package com.appyvet.materialrangebar;
  * governing permissions and limitations under the License.
  */
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -70,12 +69,6 @@ public class RangeBar extends View {
 
     private static final float DEFAULT_TICK_HEIGHT_DP = 1;
 
-    private static final float DEFAULT_PIN_PADDING_DP = 16;
-
-    public static final float DEFAULT_MIN_PIN_FONT_SP = 8;
-
-    public static final float DEFAULT_MAX_PIN_FONT_SP = 24;
-
     private static final float DEFAULT_BAR_WEIGHT_DP = 2;
 
     private static final float DEFAULT_CIRCLE_BOUNDARY_SIZE_DP = 0;
@@ -94,7 +87,6 @@ public class RangeBar extends View {
     // Corresponds to material indigo 500.
     private static final int DEFAULT_CONNECTING_LINE_COLOR = 0xff3f51b5;
 
-    private static final float DEFAULT_EXPANDED_PIN_RADIUS_DP = 12;
 
     private static final float DEFAULT_CIRCLE_SIZE_DP = 5;
 
@@ -134,13 +126,11 @@ public class RangeBar extends View {
 
     private float mCircleBoundarySize = DEFAULT_CIRCLE_BOUNDARY_SIZE_DP;
 
-    //todo: custom pinView's size
-    private float pinViewStubRadius = DEFAULT_CIRCLE_SIZE_DP;
-    //private float mThumbRadiusDP = DEFAULT_EXPANDED_PIN_RADIUS_DP;
-    private float mExpandedPinRadius = pinViewStubRadius;
-    private float mMinPinFont = DEFAULT_MIN_PIN_FONT_SP;
 
-    private float mMaxPinFont = DEFAULT_MAX_PIN_FONT_SP;
+    private float defaultCircleSizeDp = DEFAULT_CIRCLE_SIZE_DP;
+//    private float mExpandedPinRadius = defaultCircleSizeDp;
+    //private float mMinPinFont = DEFAULT_MIN_PIN_FONT_SP;
+
 
     // setTickCount only resets indices before a thumb has been pressed or a
     // setThumbIndices() is called, to correspond with intended usage
@@ -174,7 +164,7 @@ public class RangeBar extends View {
 
     private boolean mIsRangeBar = true;
 
-    private float mPinPadding = DEFAULT_PIN_PADDING_DP;
+
 
     private float mBarPaddingBottom = DEFAULT_BAR_PADDING_BOTTOM_DP;
 
@@ -249,13 +239,13 @@ public class RangeBar extends View {
         bundle.putFloat("CONNECTING_LINE_WEIGHT", mConnectingLineWeight);
         bundle.putInt("CONNECTING_LINE_COLOR", mConnectingLineColor);
 
-        bundle.putFloat("CIRCLE_SIZE", pinViewStubRadius);
+        //bundle.putFloat("CIRCLE_SIZE", defaultCircleSizeDp);
         bundle.putInt("CIRCLE_COLOR", mCircleColor);
         bundle.putInt("CIRCLE_BOUNDARY_COLOR", mCircleBoundaryColor);
         bundle.putFloat("CIRCLE_BOUNDARY_WIDTH", mCircleBoundarySize);
         //bundle.putFloat("THUMB_RADIUS_DP", mThumbRadiusDP);
-        bundle.putFloat("EXPANDED_PIN_RADIUS_DP", mExpandedPinRadius);
-        bundle.putFloat("PIN_PADDING", mPinPadding);
+        //bundle.putFloat("EXPANDED_PIN_RADIUS_DP", mExpandedPinRadius);
+        //bundle.putFloat("PIN_PADDING", mPinPadding);
         bundle.putFloat("BAR_PADDING_BOTTOM", mBarPaddingBottom);
         bundle.putBoolean("IS_RANGE_BAR", mIsRangeBar);
         bundle.putBoolean("ARE_PINS_TEMPORARY", mArePinsTemporary);
@@ -264,8 +254,8 @@ public class RangeBar extends View {
 
         bundle.putBoolean("FIRST_SET_TICK_COUNT", mFirstSetTickCount);
 
-        bundle.putFloat("MIN_PIN_FONT", mMinPinFont);
-        bundle.putFloat("MAX_PIN_FONT", mMaxPinFont);
+        //bundle.putFloat("MIN_PIN_FONT", mMinPinFont);
+        //bundle.putFloat("MAX_PIN_FONT", mMaxPinFont);
 
         return bundle;
     }
@@ -285,7 +275,7 @@ public class RangeBar extends View {
             mTickHeight = bundle.getFloat("TICK_HEIGHT_DP");
             mBarWeight = bundle.getFloat("BAR_WEIGHT");
             mBarColor = bundle.getInt("BAR_COLOR");
-            pinViewStubRadius = bundle.getFloat("CIRCLE_SIZE");
+            defaultCircleSizeDp = bundle.getFloat("CIRCLE_SIZE");
             mCircleColor = bundle.getInt("CIRCLE_COLOR");
             mCircleBoundaryColor = bundle.getInt("CIRCLE_BOUNDARY_COLOR");
             mCircleBoundarySize = bundle.getFloat("CIRCLE_BOUNDARY_WIDTH");
@@ -293,8 +283,8 @@ public class RangeBar extends View {
             mConnectingLineColor = bundle.getInt("CONNECTING_LINE_COLOR");
 
             //mThumbRadiusDP = bundle.getFloat("THUMB_RADIUS_DP");
-            mExpandedPinRadius = bundle.getFloat("EXPANDED_PIN_RADIUS_DP");
-            mPinPadding = bundle.getFloat("PIN_PADDING");
+            //mExpandedPinRadius = bundle.getFloat("EXPANDED_PIN_RADIUS_DP");
+            //mPinPadding = bundle.getFloat("PIN_PADDING");
             mBarPaddingBottom = bundle.getFloat("BAR_PADDING_BOTTOM");
             mIsRangeBar = bundle.getBoolean("IS_RANGE_BAR");
             mArePinsTemporary = bundle.getBoolean("ARE_PINS_TEMPORARY");
@@ -303,8 +293,8 @@ public class RangeBar extends View {
             mRightIndex = bundle.getInt("RIGHT_INDEX");
             mFirstSetTickCount = bundle.getBoolean("FIRST_SET_TICK_COUNT");
 
-            mMinPinFont = bundle.getFloat("MIN_PIN_FONT");
-            mMaxPinFont = bundle.getFloat("MAX_PIN_FONT");
+            //mMinPinFont = bundle.getFloat("MIN_PIN_FONT");
+            //mMaxPinFont = bundle.getFloat("MAX_PIN_FONT");
 
             setRangePinsByIndices(mLeftIndex, mRightIndex);
             super.onRestoreInstanceState(bundle.getParcelable("instanceState"));
@@ -349,18 +339,9 @@ public class RangeBar extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-
         super.onSizeChanged(w, h, oldw, oldh);
-
         final Context ctx = getContext();
-
-        // This is the initial point at which we know the size of the View.
-
-        // Create the two thumb objects and position line in view
-        float density = mDisplayMetrics.density;
-        float expandedPinRadius = mExpandedPinRadius;
-
-        final float yPos = h - mBarPaddingBottom;
+        final float barYPos = getYPos();
         if (mIsRangeBar) {
             if (customLeftThumb != null) {
                 if(!(mLeftThumb instanceof CustomPinView)) {
@@ -370,8 +351,8 @@ public class RangeBar extends View {
             } else {
                 mLeftThumb = new DefaultPinView(ctx);
                 mLeftThumb.setFormatter(mFormatter);
-                ((DefaultPinView) mLeftThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, pinViewStubRadius,
-                        mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+                ((DefaultPinView) mLeftThumb).init(this, barYPos, mPinColor, mTextColor, defaultCircleSizeDp,
+                        mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
             }
         }
 
@@ -383,15 +364,15 @@ public class RangeBar extends View {
         } else {
             mRightThumb = new DefaultPinView(ctx);
             mRightThumb.setFormatter(mFormatter);
-            ((DefaultPinView) mRightThumb).init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, pinViewStubRadius,
-                    mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+            ((DefaultPinView) mRightThumb).init(this, barYPos, mPinColor, mTextColor, defaultCircleSizeDp,
+                    mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
         }
 
         // Create the underlying bar.
-        final float marginLeft = Math.max(mExpandedPinRadius, pinViewStubRadius);
+        final float marginLeft = getMarginLeft();
 
         final float barLength = w - (2 * marginLeft);
-        mBar = new Bar(ctx, marginLeft, yPos, barLength, mTickCount, mTickHeight, mTickColor,
+        mBar = new Bar(ctx, marginLeft, barYPos, barLength, mTickCount, mTickHeight, mTickColor,
                 mBarWeight, mBarColor);
 
         // Initialize thumbs to the desired indices
@@ -416,7 +397,7 @@ public class RangeBar extends View {
         }
 
         // Create the line connecting the two thumbs.
-        mConnectingLine = new ConnectingLine(ctx, yPos, mConnectingLineWeight,
+        mConnectingLine = new ConnectingLine(ctx, barYPos, mConnectingLineWeight,
                 mConnectingLineColorStart, mConnectingLineColorEnd);
     }
 
@@ -715,7 +696,6 @@ public class RangeBar extends View {
      *                  DP.
      */
     public void setBarWeight(float barWeight) {
-
         mBarWeight = barWeight;
         createBar();
     }
@@ -759,32 +739,6 @@ public class RangeBar extends View {
         mIsRangeBar = isRangeBar;
         invalidate();
     }
-
-
-    private float zoomRatio = 1.f;
-    public void setTemporaryPinsSizeRatio(float ratio) {
-        zoomRatio = ratio;
-        mExpandedPinRadius = pinViewStubRadius * ratio;
-    }
-
-    /**
-     * Set if the pins should disappear after released
-     *
-     * @param arePinsTemporary Boolean - true if pins should disappear after released, false to
-     *                         stay drawn
-     */
-    public void setTemporaryPins(boolean arePinsTemporary) {
-        mArePinsTemporary = arePinsTemporary;
-        if (mArePinsTemporary) {
-            mExpandedPinRadiusStart = 0;
-        } else {
-            mExpandedPinRadiusStart = (int) pinViewStubRadius;
-        }
-
-        invalidate();
-    }
-
-
 
 
     /**
@@ -853,16 +807,16 @@ public class RangeBar extends View {
         createConnectingLine();
     }
 
-    /**
-     * If this is set, the thumb images will be replaced with a circle of the
-     * specified radius. Default width = 12dp.
-     *
-     * @param pinRadius Float specifying the radius of the thumbs to be drawn. Value should be in DP
-     */
-    public void setPinRadius(float pinRadius) {
-        mExpandedPinRadius = pinRadius;
-        createPins();
-    }
+//    /**
+//     * If this is set, the thumb images will be replaced with a circle of the
+//     * specified radius. Default width = 12dp.
+//     *
+//     * @param pinRadius Float specifying the radius of the thumbs to be drawn. Value should be in DP
+//     */
+//    public void setPinRadius(float pinRadius) {
+//
+//        createPins();
+//    }
 
     /**
      * Gets the start tick.
@@ -1170,7 +1124,7 @@ public class RangeBar extends View {
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_BAR_WEIGHT_DP,
                             mDisplayMetrics)
             );
-            pinViewStubRadius = ta.getDimension(R.styleable.RangeBar_mrb_selectorSize,
+            defaultCircleSizeDp = ta.getDimension(R.styleable.RangeBar_mrb_selectorSize,
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_CIRCLE_SIZE_DP,
                             mDisplayMetrics)
             );
@@ -1182,14 +1136,8 @@ public class RangeBar extends View {
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_CONNECTING_LINE_WEIGHT_DP,
                             mDisplayMetrics)
             );
-            mExpandedPinRadius = ta.getDimension(R.styleable.RangeBar_mrb_pinRadius,
-                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_EXPANDED_PIN_RADIUS_DP,
-                            mDisplayMetrics)
-            );
-            mPinPadding = ta.getDimension(R.styleable.RangeBar_mrb_pinPadding,
-                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_PIN_PADDING_DP,
-                            mDisplayMetrics)
-            );
+
+
             mBarPaddingBottom = ta.getDimension(R.styleable.RangeBar_mrb_rangeBarPaddingBottom,
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_BAR_PADDING_BOTTOM_DP,
                             mDisplayMetrics)
@@ -1218,13 +1166,13 @@ public class RangeBar extends View {
 
 
             mIsRangeBar = ta.getBoolean(R.styleable.RangeBar_mrb_rangeBar, true);
-            boolean tmpPin = ta.getBoolean(R.styleable.RangeBar_mrb_temporaryPins, true);
-            setTemporaryPins(tmpPin);
+            //boolean tmpPin = ta.getBoolean(R.styleable.RangeBar_mrb_temporaryPins, true);
+            //setTemporaryPins(tmpPin);
             float density = mDisplayMetrics.density;
-            mMinPinFont = ta.getDimension(R.styleable.RangeBar_mrb_pinMinFont,
-                    DEFAULT_MIN_PIN_FONT_SP * density);
-            mMaxPinFont = ta.getDimension(R.styleable.RangeBar_mrb_pinMaxFont,
-                    DEFAULT_MAX_PIN_FONT_SP * density);
+//            mMinPinFont = ta.getDimension(R.styleable.RangeBar_mrb_pinMinFont,
+//                    DEFAULT_MIN_PIN_FONT_SP * density);
+//            mMaxPinFont = ta.getDimension(R.styleable.RangeBar_mrb_pinMaxFont,
+//                    DEFAULT_MAX_PIN_FONT_SP * density);
 
             mIsRangeBar = ta.getBoolean(R.styleable.RangeBar_mrb_rangeBar, true);
         } finally {
@@ -1272,8 +1220,7 @@ public class RangeBar extends View {
                 mLeftThumb = new CustomPinView(customLeftThumb, leftValListener, this);
             } else {
                 mLeftThumb = new DefaultPinView(ctx);
-                ((DefaultPinView) mLeftThumb).init(ctx, yPos, mExpandedPinRadius, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize,
-                        mMinPinFont, mMaxPinFont, false);
+                ((DefaultPinView) mLeftThumb).init(this, yPos, mPinColor, mTextColor, defaultCircleSizeDp, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, true);
             }
         }
 
@@ -1282,8 +1229,7 @@ public class RangeBar extends View {
         } else {
             mRightThumb = new DefaultPinView(ctx);
             ((DefaultPinView) mRightThumb)
-                    .init(ctx, yPos, mExpandedPinRadius, mPinColor, mTextColor, pinViewStubRadius, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize
-                            , mMinPinFont, mMaxPinFont, false);
+                    .init(this, yPos, mPinColor, mTextColor, defaultCircleSizeDp, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize , true);
         }
 
         float marginLeft = getMarginLeft();
@@ -1306,7 +1252,11 @@ public class RangeBar extends View {
      * @return float marginLeft
      */
     private float getMarginLeft() {
-        return Math.max(mExpandedPinRadius, pinViewStubRadius);
+        return getPaddingLeft();
+//        if(getLayoutParams() != null && getLayoutParams() instanceof ViewGroup.MarginLayoutParams){
+//            return ((ViewGroup.MarginLayoutParams)getLayoutParams()).leftMargin;
+//        }
+//        return 0;
     }
 
     /**
@@ -1500,20 +1450,21 @@ public class RangeBar extends View {
         if (mFirstSetTickCount) {
             mFirstSetTickCount = false;
         }
-        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
-            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadiusStart, mExpandedPinRadius);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float val = (Float) (animation.getAnimatedValue());
-                    float zoom = val / pinViewStubRadius;
-                    thumb.setPinZoom(zoom, mPinPadding * animation.getAnimatedFraction());
-                    invalidate();
-                }
-            });
-            animator.start();
-        }
+//        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
+//            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadiusStart, mExpandedPinRadius);
+//            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//
+//                @Override
+//                public void onAnimationUpdate(ValueAnimator animation) {
+//                    float val = (Float) (animation.getAnimatedValue());
+//                    float zoom = val / defaultCircleSizeDp;
+//                    thumb.setPinZoom(zoom, mPinPadding * animation.getAnimatedFraction());
+//                    invalidate();
+//                }
+//            });
+//            animator.start();
+//        }
 
         thumb.press();
     }
@@ -1531,22 +1482,22 @@ public class RangeBar extends View {
         int tickIndex = mBar.getNearestTickIndex(thumb);
         thumb.setXValue(getPinValue(tickIndex));
 
-        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
-            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadius, mExpandedPinRadiusStart);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float val = (Float) (animation.getAnimatedValue());
-                    float zoom = val / pinViewStubRadius;
-                    thumb.setPinZoom(zoom, mPinPadding - (mPinPadding * animation.getAnimatedFraction()));
-                    invalidate();
-                }
-            });
-            animator.start();
-        } else {
-            invalidate();
-        }
+//        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
+//            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadius, mExpandedPinRadiusStart);
+//            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//
+//                @Override
+//                public void onAnimationUpdate(ValueAnimator animation) {
+//                    float val = (Float) (animation.getAnimatedValue());
+//                    float zoom = val / defaultCircleSizeDp;
+//                    thumb.setPinZoom(zoom, mPinPadding - (mPinPadding * animation.getAnimatedFraction()));
+//                    invalidate();
+//                }
+//            });
+//            animator.start();
+//        } else {
+//            invalidate();
+//        }
 
         thumb.release();
     }
@@ -1636,7 +1587,6 @@ public class RangeBar extends View {
         customRightThumb = right;
         this.rightValListener = rightValListener;
 
-        setTemporaryPinsSizeRatio(zoomRatio);
         createPins();
     }
 
@@ -1646,9 +1596,9 @@ public class RangeBar extends View {
      * @param r radius of selector
      */
     public void setPinViewStubRadius(int r) {
-        pinViewStubRadius = r;
+        defaultCircleSizeDp = r;
         createBar();
-        setTemporaryPinsSizeRatio(zoomRatio);
+
     }
 
     public static int dp2px(Context context, float dpValue) {

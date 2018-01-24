@@ -19,14 +19,6 @@ public abstract class PinView extends View {
     public abstract void setFormatter(com.appyvet.materialrangebar.IRangeBarFormatter mFormatter);
 
     /**
-     * Set r of the pin and padding for use when animating pin enlargement on press
-     *
-     * @param ratio    the zoom ratio of the pin radius
-     * @param padding the r of the padding
-     */
-    public abstract void setPinZoom(float ratio, float padding) ;
-
-    /**
      * Release the pin, sets pressed state to false
      */
     public abstract void release();

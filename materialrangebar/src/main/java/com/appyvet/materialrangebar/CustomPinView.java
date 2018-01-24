@@ -1,7 +1,7 @@
 package com.appyvet.materialrangebar;
 
+import android.animation.ValueAnimator;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 class CustomPinView extends PinView {
     View customView;
     boolean isPressed;
+
+    float pinViewStubRadius;
+    float mExpandedPinRadiusStart;
+    float mExpandedPinRadius;
 
     int layoutWidth = ViewGroup.LayoutParams.WRAP_CONTENT, widMode = MeasureSpec.UNSPECIFIED;
     int layoutHeight = ViewGroup.LayoutParams.WRAP_CONTENT, heightMode = MeasureSpec.UNSPECIFIED;
@@ -27,18 +31,14 @@ class CustomPinView extends PinView {
         customView = cv;
 
         firstLayout();
+    }
 
-//        bar.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-//            @Override
-//            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-//                firstLayout();
-//            }
-//        });
+    @Override
+    public void invalidate() {
+        bar.invalidate();
     }
 
     private void firstLayout() {
-//        layoutWidth = bar.getHeight() > 0 ? bar.getHeight() : 10000;
-//        layoutHeight = bar.getWidth() > 0 ? bar.getWidth() : 10000;
 
         if (customView.getLayoutParams() != null) {
             ViewGroup.LayoutParams params = customView.getLayoutParams();
@@ -56,6 +56,9 @@ class CustomPinView extends PinView {
         width = customView.getWidth();
         height = customView.getHeight();
         bar.setPinViewStubRadius(width / 2);
+        pinViewStubRadius = width / 2;
+        setTemporaryPinsSizeRatio(1.0f, 1.0f);
+
     }
 
     private void layoutCustomView(int w, int wm, int h, int hm) {
@@ -76,19 +79,54 @@ class CustomPinView extends PinView {
 
     }
 
-    @Override
-    public void setPinZoom(float zoom, float padding) {
+    public void setTemporaryPinsSizeRatio(float from, float to) {
+        mExpandedPinRadiusStart = pinViewStubRadius * from;
+        mExpandedPinRadius = pinViewStubRadius * to;
+    }
+
+    private void setPinZoom(float zoom) {
         layoutCustomView((int) (width * zoom), MeasureSpec.EXACTLY, (int) (height * zoom), MeasureSpec.EXACTLY);
     }
 
     @Override
     public void release() {
         isPressed = false;
+        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
+            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadius, mExpandedPinRadiusStart);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float val = (Float) (animation.getAnimatedValue());
+                    float zoom = val / pinViewStubRadius;
+                    CustomPinView.this.setPinZoom(zoom);
+                    invalidate();
+                }
+            });
+            animator.start();
+        } else {
+            invalidate();
+        }
     }
 
     @Override
     public void press() {
         isPressed = true;
+        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
+            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadiusStart, mExpandedPinRadius);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float val = (Float) (animation.getAnimatedValue());
+                    float zoom = val / pinViewStubRadius;
+                    CustomPinView.this.setPinZoom(zoom);
+                    invalidate();
+                }
+            });
+            animator.start();
+        }
+
     }
 
     @Override
@@ -107,7 +145,6 @@ class CustomPinView extends PinView {
     @Override
     public float getX() {
         float x = customView.getLeft() + customView.getWidth() / 2;
-        //Log.w("getx", "x :" + x);
         return x;
     }
 

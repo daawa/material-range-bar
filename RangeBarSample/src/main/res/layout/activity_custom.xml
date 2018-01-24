@@ -21,6 +21,7 @@
         android:textSize="40sp"/>
 
     <com.appyvet.materialrangebar.RangeBar
+        android:paddingLeft="18dp"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/rangebar1"
         android:layout_width="match_parent"
