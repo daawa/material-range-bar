@@ -370,8 +370,8 @@ public class RangeBar extends View {
 
         // Create the underlying bar.
         final float marginLeft = getMarginLeft();
+        final float barLength = getBarLength();
 
-        final float barLength = w - (2 * marginLeft);
         mBar = new Bar(ctx, marginLeft, barYPos, barLength, mTickCount, mTickHeight, mTickColor,
                 mBarWeight, mBarColor);
 
@@ -1259,6 +1259,10 @@ public class RangeBar extends View {
 //        return 0;
     }
 
+    private float getMarginRight(){
+        return getPaddingRight();
+    }
+
     /**
      * Get yPos in each of the public attribute methods.
      *
@@ -1274,7 +1278,7 @@ public class RangeBar extends View {
      * @return float barLength
      */
     private float getBarLength() {
-        return (getWidth() - 2 * getMarginLeft());
+        return (getWidth() -  getMarginLeft() - getMarginRight());
     }
 
     /**
