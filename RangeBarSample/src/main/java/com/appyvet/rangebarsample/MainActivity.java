@@ -2,22 +2,17 @@
 package com.appyvet.rangebarsample;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.appyvet.materialrangebar.PinView;
 import com.appyvet.materialrangebar.RangeBar;
 import com.appyvet.rangebarsample.colorpicker.ColorPickerDialog;
 import com.appyvet.rangebarsample.colorpicker.Utils;
@@ -153,7 +148,7 @@ public class MainActivity extends Activity implements
         // Sets the display values of the indices
         rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
-            public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex,
+            public void onRangeChangeListener(RangeBar rangeBar, boolean drawTicks, int leftPinIndex,
                                               int rightPinIndex, String leftPinValue, String rightPinValue) {
                 leftIndexValue.setText("" + leftPinIndex);
                 rightIndexValue.setText("" + rightPinIndex);
@@ -175,7 +170,7 @@ public class MainActivity extends Activity implements
                     if (!leftIndex.isEmpty() && !rightIndex.isEmpty()) {
                         int leftIntIndex = Integer.parseInt(leftIndex);
                         int rightIntIndex = Integer.parseInt(rightIndex);
-                        rangebar.setRangePinsByIndices(leftIntIndex, rightIntIndex);
+                        rangebar.setRangePinsByTickIndex(leftIntIndex, rightIntIndex);
                     }
                 } catch (IllegalArgumentException e) {
                 }
@@ -212,7 +207,7 @@ public class MainActivity extends Activity implements
             @Override
             public void onProgressChanged(SeekBar tickCountSeek, int progress, boolean fromUser) {
                 try {
-                    rangebar.setTickStart(progress);
+                    //rangebar.setTickStart(progress);
                 } catch (IllegalArgumentException e) {
                 }
                 tickStart.setText("tickStart = " + progress);
@@ -234,7 +229,7 @@ public class MainActivity extends Activity implements
             @Override
             public void onProgressChanged(SeekBar tickCountSeek, int progress, boolean fromUser) {
                 try {
-                    rangebar.setTickEnd(progress);
+                    //rangebar.setTickEnd(progress);
                 } catch (IllegalArgumentException e) {
                 }
                 tickEnd.setText("tickEnd = " + progress);
@@ -256,7 +251,7 @@ public class MainActivity extends Activity implements
             @Override
             public void onProgressChanged(SeekBar tickCountSeek, int progress, boolean fromUser) {
                 try {
-                    rangebar.setTickInterval(progress / 10.0f);
+                    //rangebar.setTickInterval(progress / 10.0f);
                 } catch (IllegalArgumentException e) {
                 }
                 tickInterval.setText("tickInterval = " + progress / 10.0f);

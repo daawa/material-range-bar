@@ -34,9 +34,9 @@
         app:mrb_pinMaxFont="10sp"
         app:mrb_rangeBarColor="#f0f0f0"
         app:mrb_rangeBarPaddingBottom="50dp"
+        app:mrb_drawTicks="false"
         app:mrb_tickEnd="70"
         app:mrb_tickHeight="0dp"
-        app:mrb_tickInterval="1"
         app:mrb_tickStart="0" />
 
     <include

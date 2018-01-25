@@ -30,15 +30,15 @@ public class Bar {
     private final Paint mTickPaint;
 
     // Left-coordinate of the horizontal bar.
-    private final float mLeftX;
+    private final int mLeftX;
 
-    private final float mRightX;
+    private final int mRightX;
 
     private final float mY;
 
     private int mNumSegments;
 
-    private float mTickDistance;
+    private int mTickDistance;
 
     private final float mTickHeight;
 
@@ -59,9 +59,9 @@ public class Bar {
      * @param barColor     the color of the bar
      */
     public Bar(Context ctx,
-            float x,
-            float y,
-            float length,
+            int x,
+            int y,
+            int length,
             int tickCount,
             float tickHeight,
             int tickColor,
@@ -73,7 +73,10 @@ public class Bar {
         mY = y;
 
         mNumSegments = tickCount - 1;
+        mNumSegments = mNumSegments <= 0 ? 1 : mNumSegments;
         mTickDistance = length / mNumSegments;
+        mTickDistance = mTickDistance <= 0 ? 0 : mTickDistance;
+
         mTickHeight = tickHeight;
         // Initialize the paint.
         mBarPaint = new Paint();
@@ -149,9 +152,10 @@ public class Bar {
      */
     public void setTickCount(int tickCount) {
 
-        final float barLength = mRightX - mLeftX;
+        final int barLength = mRightX - mLeftX;
 
         mNumSegments = tickCount - 1;
+        mNumSegments = mNumSegments <= 0 ? 1 : mNumSegments;
         mTickDistance = barLength / mNumSegments;
     }
 

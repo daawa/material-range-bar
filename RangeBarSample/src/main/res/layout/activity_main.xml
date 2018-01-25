@@ -32,8 +32,8 @@
         app:mrb_selectorBoundarySize="2dp"
         app:mrb_pinTextColor="#ACD123"
         app:mrb_selectorSize="10dp"
+        app:mrb_drawTicks="false"
         app:mrb_tickEnd="10"
-        app:mrb_tickInterval="1"
         app:mrb_tickStart="5"
         app:mrb_connectingLineColorStart="#11ff0000"
         app:mrb_connectingLineColorEnd="#ffff0000"/>

@@ -3,9 +3,10 @@
     <declare-styleable name="RangeBar">
         <attr name="mrb_tickStart" format="float"/>
         <attr name="mrb_tickEnd" format="float"/>
-        <attr name="mrb_tickInterval" format="float"/>
+        <attr name="mrb_tickCount" format="integer"/>
         <attr name="mrb_tickHeight" format="dimension"/>
         <attr name="mrb_tickColor" format="color"/>
+        <attr name="mrb_drawTicks" format="boolean"/>
 
         <attr name="mrb_rangeBar" format="boolean"/>
         <attr name="mrb_barWeight" format="dimension"/>
@@ -27,6 +28,7 @@
 
         <attr name="mrb_connectingLineWeight" format="dimension"/>
         <attr name="mrb_connectingLineColor" format="reference|color"/>
+
         <attr name="mrb_connectingLineColorStart" format="reference|color"/>
         <attr name="mrb_connectingLineColorEnd" format="reference|color"/>
 

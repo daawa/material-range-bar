@@ -3,7 +3,6 @@ package com.appyvet.rangebarsample;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,8 +16,6 @@ import android.widget.TextView;
 
 import com.appyvet.materialrangebar.PinView;
 import com.appyvet.materialrangebar.RangeBar;
-import com.appyvet.rangebarsample.colorpicker.ColorPickerDialog;
-import com.appyvet.rangebarsample.colorpicker.Utils;
 
 /**
  * Created by zhangzhenwei on 2018/1/23.
@@ -76,6 +73,7 @@ public class CustomActivity extends Activity {
 //        final TextView pinTextColor = (TextView) findViewById(R.id.textColor);
 //        final TextView tickColor = (TextView) findViewById(R.id.tickColor);
 //        final TextView selectorColor = (TextView) findViewById(R.id.selectorColor);
+
         final TextView indexButton = (TextView) findViewById(R.id.setIndex);
         final TextView valueButton = (TextView) findViewById(R.id.setValue);
         final TextView rangeButton = (TextView) findViewById(R.id.enableRange);
@@ -111,11 +109,15 @@ public class CustomActivity extends Activity {
         rangebar.setPinTextFormatter(new RangeBar.PinTextFormatter() {
             @Override
             public String getText(String value) {
+                int index = value.indexOf(".");
+                if(index > 0 && index < value.length() - 2){
+                    value = value.substring(0, index + 2);
+                }
                 return value;
             }
         });
 
-        rangebar.setTickConfig(5, 200000, 50);
+        rangebar.setTickConfig(5, 2000, 50);
         //rangebar.setTemporaryPinsSizeRatio(1.5f);
         //rangebar.setTemporaryPins(false);
 
@@ -141,7 +143,7 @@ public class CustomActivity extends Activity {
         // Sets the display values of the indices
         rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
-            public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex,
+            public void onRangeChangeListener(RangeBar rangeBar, boolean drawTicks, int leftPinIndex,
                                               int rightPinIndex, String leftPinValue, String rightPinValue) {
                 leftIndexValue.setText("" + leftPinIndex);
                 rightIndexValue.setText("" + rightPinIndex);
@@ -163,7 +165,7 @@ public class CustomActivity extends Activity {
                     if (!leftIndex.isEmpty() && !rightIndex.isEmpty()) {
                         int leftIntIndex = Integer.parseInt(leftIndex);
                         int rightIntIndex = Integer.parseInt(rightIndex);
-                        rangebar.setRangePinsByIndices(leftIntIndex, rightIntIndex);
+                        rangebar.setRangePinsByTickIndex(leftIntIndex, rightIntIndex);
                     }
                 } catch (IllegalArgumentException e) {
                 }
@@ -200,7 +202,7 @@ public class CustomActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar tickCountSeek, int progress, boolean fromUser) {
                 try {
-                    rangebar.setTickStart(progress);
+                    //rangebar.setTickStart(progress);
                 } catch (IllegalArgumentException e) {
                 }
                 tickStart.setText("tickStart = " + progress);
@@ -222,7 +224,7 @@ public class CustomActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar tickCountSeek, int progress, boolean fromUser) {
                 try {
-                    rangebar.setTickEnd(progress);
+                    //rangebar.setTickEnd(progress);
                 } catch (IllegalArgumentException e) {
                 }
                 tickEnd.setText("tickEnd = " + progress);
@@ -244,7 +246,7 @@ public class CustomActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar tickCountSeek, int progress, boolean fromUser) {
                 try {
-                    rangebar.setTickInterval(progress / 10.0f);
+                    //rangebar.setTickInterval(progress / 10.0f);
                 } catch (IllegalArgumentException e) {
                 }
                 tickInterval.setText("tickInterval = " + progress / 10.0f);
