@@ -378,10 +378,10 @@ public class RangeBar extends View {
         // Initialize thumbs to the desired indices
         if (mIsRangeBar) {
             mLeftThumb.setX(marginLeft + (mLeftIndex / (float) (mTickCount - 1)) * barLength);
-            mLeftThumb.setXValue(getPinValue(mLeftIndex));
+            mLeftThumb.setPinValue(getPinValue(mLeftIndex));
         }
         mRightThumb.setX(marginLeft + (mRightIndex / (float) (mTickCount - 1)) * barLength);
-        mRightThumb.setXValue(getPinValue(mRightIndex));
+        mRightThumb.setPinValue(getPinValue(mRightIndex));
 
         // Set the thumb indices.
         final int newLeftIndex = mIsRangeBar ? mBar.getNearestTickIndex(mLeftThumb) : 0;
@@ -1238,10 +1238,10 @@ public class RangeBar extends View {
         // Initialize thumbs to the desired indices
         if (mIsRangeBar) {
             mLeftThumb.setX(marginLeft + (mLeftIndex / (float) (mTickCount - 1)) * barLength);
-            mLeftThumb.setXValue(getPinValue(mLeftIndex));
+            mLeftThumb.setPinValue(getPinValue(mLeftIndex));
         }
         mRightThumb.setX(marginLeft + (mRightIndex / (float) (mTickCount - 1)) * barLength);
-        mRightThumb.setXValue(getPinValue(mRightIndex));
+        mRightThumb.setPinValue(getPinValue(mRightIndex));
 
         invalidate();
     }
@@ -1348,15 +1348,10 @@ public class RangeBar extends View {
      */
     private void onActionUp(float x, float y) {
         if (mIsRangeBar && mLeftThumb.isPressed()) {
-
             releasePin(mLeftThumb);
-
         } else if (mRightThumb.isPressed()) {
-
             releasePin(mRightThumb);
-
         } else {
-
             float leftThumbXDistance = mIsRangeBar ? Math.abs(mLeftThumb.getX() - x) : 0;
             float rightThumbXDistance = Math.abs(mRightThumb.getX() - x);
 
@@ -1430,9 +1425,9 @@ public class RangeBar extends View {
             mLeftIndex = newLeftIndex;
             mRightIndex = newRightIndex;
             if (mIsRangeBar) {
-                mLeftThumb.setXValue(getPinValue(mLeftIndex));
+                mLeftThumb.setPinValue(getPinValue(mLeftIndex));
             }
-            mRightThumb.setXValue(getPinValue(mRightIndex));
+            mRightThumb.setPinValue(getPinValue(mRightIndex));
 
             if (mListener != null) {
                 mListener.onRangeChangeListener(this, mLeftIndex, mRightIndex,
@@ -1455,21 +1450,6 @@ public class RangeBar extends View {
             mFirstSetTickCount = false;
         }
 
-//        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
-//            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadiusStart, mExpandedPinRadius);
-//            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//
-//                @Override
-//                public void onAnimationUpdate(ValueAnimator animation) {
-//                    float val = (Float) (animation.getAnimatedValue());
-//                    float zoom = val / defaultCircleSizeDp;
-//                    thumb.setPinZoom(zoom, mPinPadding * animation.getAnimatedFraction());
-//                    invalidate();
-//                }
-//            });
-//            animator.start();
-//        }
-
         thumb.press();
     }
 
@@ -1484,26 +1464,13 @@ public class RangeBar extends View {
         final float nearestTickX = mBar.getNearestTickCoordinate(thumb);
         thumb.setX(nearestTickX);
         int tickIndex = mBar.getNearestTickIndex(thumb);
-        thumb.setXValue(getPinValue(tickIndex));
-
-//        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
-//            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadius, mExpandedPinRadiusStart);
-//            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//
-//                @Override
-//                public void onAnimationUpdate(ValueAnimator animation) {
-//                    float val = (Float) (animation.getAnimatedValue());
-//                    float zoom = val / defaultCircleSizeDp;
-//                    thumb.setPinZoom(zoom, mPinPadding - (mPinPadding * animation.getAnimatedFraction()));
-//                    invalidate();
-//                }
-//            });
-//            animator.start();
-//        } else {
-//            invalidate();
-//        }
+        thumb.setPinValue(getPinValue(tickIndex));
 
         thumb.release();
+
+        if(mListener != null){
+            mListener.onRangeChangeListener(this, getLeftIndex(), getRightIndex(), getLeftPinValue(), getRightPinValue());
+        }
     }
 
     /**

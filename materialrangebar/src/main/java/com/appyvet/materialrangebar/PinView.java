@@ -33,7 +33,7 @@ public abstract class PinView extends View {
      *
      * @param x String value of the pin
      */
-    public final void setXValue(String x){
+    public final void setPinValue(String x){
         String old = getValue();
         if(listener != null){
             x = listener.onValueChanged(x);
