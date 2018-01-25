@@ -121,6 +121,13 @@ public class CustomActivity extends Activity {
         //rangebar.setTemporaryPinsSizeRatio(1.5f);
         //rangebar.setTemporaryPins(false);
 
+        rangebar.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rangebar.setRangePinsByValue(200, 1200);
+            }
+        }, 3000);
+
         rangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

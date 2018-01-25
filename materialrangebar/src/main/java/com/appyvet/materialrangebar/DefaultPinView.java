@@ -308,7 +308,7 @@ class DefaultPinView extends PinView {
                 public void onAnimationUpdate(ValueAnimator animation) {
                     mThumbRadiusDP = (Float) (animation.getAnimatedValue());
                     DefaultPinView.this.setSize(mThumbRadiusDP,
-                            tmpPinPadding - (tmpPinPadding * animation.getAnimatedFraction()));
+                            PinPadding - (PinPadding * animation.getAnimatedFraction()));
                     invalidate();
                 }
             });
@@ -341,7 +341,7 @@ class DefaultPinView extends PinView {
 
         canvas.drawCircle(mX, mY, mCircleRadiusPx, mCirclePaint);
         //Draw pin if pressed
-        if (mPinRadiusPx > 0 && (mIsPressed || !mPinsAreTemporary)) {
+        if (mPinRadiusPx > 0 && (mIsPressed)) {
             mBounds.set((int) mX - mPinRadiusPx,
                     (int) mY - (mPinRadiusPx * 2) - (int) tmpPinPadding,
                     (int) mX + mPinRadiusPx, (int) mY - (int) tmpPinPadding);

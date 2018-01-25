@@ -155,9 +155,9 @@ public class RangeBar extends View {
 
     private SparseArray<Float> mTickMap;
 
-    private int mLeftPos;
+    private float mLeftPos;
 
-    private int mRightPos;
+    private float mRightPos;
 
     private boolean mIsRangeBar = true;
 
@@ -240,8 +240,8 @@ public class RangeBar extends View {
         bundle.getInt("BAR_PADDING_BOTTOM", mBarPaddingBottom);
         bundle.putBoolean("IS_RANGE_BAR", mIsRangeBar);
         bundle.putBoolean("ARE_PINS_TEMPORARY", mArePinsTemporary);
-        bundle.putInt("LEFT_INDEX", mLeftPos);
-        bundle.putInt("RIGHT_INDEX", mRightPos);
+        bundle.putFloat("LEFT_INDEX", mLeftPos);
+        bundle.putFloat("RIGHT_INDEX", mRightPos);
 
         //bundle.putBoolean("FIRST_SET_TICK_COUNT", mFirstSetTickCount);
 
@@ -276,8 +276,7 @@ public class RangeBar extends View {
             mLeftPos = bundle.getInt("LEFT_INDEX");
             mRightPos = bundle.getInt("RIGHT_INDEX");
             //mFirstSetTickCount = bundle.getBoolean("FIRST_SET_TICK_COUNT");
-
-            setRangePinsByTickIndex(mLeftPos, mRightPos);
+            adjustPin();
             super.onRestoreInstanceState(bundle.getParcelable("instanceState"));
 
         } else {
@@ -364,7 +363,7 @@ public class RangeBar extends View {
         mBar = new Bar(ctx, marginLeft, barYPos, barLength, mTickCount, mTickHeight, mTickColor,
                 mBarWeight, mBarColor);
 
-        int oldLeftPos = mLeftPos, oldRightPos = mRightPos;
+        float oldLeftPos = mLeftPos, oldRightPos = mRightPos;
         int leftTick = 0, rightTick = 0;
         // Initialize thumbs to the desired indices
         if (mIsRangeBar) {
@@ -387,10 +386,10 @@ public class RangeBar extends View {
         // Call the listener.
         if (oldLeftPos != mLeftPos || oldRightPos != mRightPos) {
             if (mListener != null) {
-                int left = drawTicks ? leftTick : mLeftPos;
-                int right = drawTicks ? rightTick : mRightPos;
+                float left = drawTicks ? leftTick : mLeftPos;
+                float right = drawTicks ? rightTick : mRightPos;
                 mListener.onRangeChangeListener(this, drawTicks,
-                        left, right,
+                        (int)left, (int)right,
                         getLeftPinValue(),
                         getRightPinValue());
             }
@@ -728,7 +727,7 @@ public class RangeBar extends View {
     }
 
     //todo: optimize
-    private int findTick4Pos(int pos) {
+    private int findTick4Pos(float pos) {
         int len = getBarLength();
         pos -= getMarginLeft();
 
@@ -792,8 +791,8 @@ public class RangeBar extends View {
                             + mTickEnd + ")");
         } else {
 
-            mLeftPos = getPinPosition4Val(leftPinValue);
-            mRightPos = getPinPosition4Val(rightPinValue);
+            mLeftPos = getPosition4Val(leftPinValue);
+            mRightPos = getPosition4Val(rightPinValue);
 
             adjustPin();
         }
@@ -802,26 +801,29 @@ public class RangeBar extends View {
     }
 
     private void adjustPin() {
-        int left = mLeftPos, right = mRightPos;
+        float left = mLeftPos, right = mRightPos;
         if (drawTicks) {
             left = findTick4Pos(mLeftPos);
             right = findTick4Pos(mRightPos);
-            mLeftPos = findPos4Tick(left);
-            mRightPos = findTick4Pos(mRightPos);
+            mLeftPos = findPos4Tick((int)left);
+            mRightPos = findTick4Pos((int)right);
         }
 
         createPins();
 
         if (mListener != null) {
             mListener.onRangeChangeListener(this, drawTicks,
-                    left, right,
+                    (int)left, (int)right,
                     getLeftPinValue(),
                     getRightPinValue());
         }
     }
 
-    private int getPinPosition4Val(float val) {
-        int pos = (int) ((val - mTickStart) / (mTickEnd - mTickStart) * getBarLength());
+    private float getPosition4Val(float val) {
+        if(val < mTickStart) val = mTickStart;
+
+        float pos = ((val - mTickStart) / (mTickEnd - mTickStart) * getBarLength()) + getMarginLeft();
+
         if (drawTicks) {
             int tick = findTick4Pos(pos);
             pos = findPos4Tick(tick);
@@ -952,11 +954,11 @@ public class RangeBar extends View {
                 mLeftPos = getMarginLeft();
                 mRightPos = getMarginRight() + getBarLength();
 
-                int left = drawTicks ? 0 : mLeftPos;
-                int right = drawTicks ? mTickCount : mRightPos;
+                float left = drawTicks ? 0 : mLeftPos;
+                float right = drawTicks ? mTickCount : mRightPos;
                 if (mListener != null) {
                     mListener.onRangeChangeListener(this, drawTicks,
-                            left, right,
+                            (int)left, (int)right,
                             String.valueOf(tickStart),
                             String.valueOf(tickEnd));
                 }
@@ -1200,7 +1202,7 @@ public class RangeBar extends View {
 
         mLeftPos = (int) mLeftThumb.getX();
         mRightPos = (int) mRightThumb.getX();
-        int left = mLeftPos, right = mRightPos;
+        float left = mLeftPos, right = mRightPos;
         if (drawTicks) {
             left = findTick4Pos(mLeftPos);
             right = findTick4Pos(mRightPos);
@@ -1208,7 +1210,7 @@ public class RangeBar extends View {
 
         if (mListener != null) {
             mListener.onRangeChangeListener(this, drawTicks,
-                    left, right,
+                    (int)left, (int)right,
                     getLeftPinValue(),
                     getRightPinValue());
         }
@@ -1259,7 +1261,7 @@ public class RangeBar extends View {
 
             if (!drawTicks && mListener != null) {
                 mListener.onRangeChangeListener(this, drawTicks,
-                        mLeftPos, mRightPos,
+                        (int)mLeftPos, (int)mRightPos,
                         getLeftPinValue(),
                         getRightPinValue());
 
@@ -1312,16 +1314,16 @@ public class RangeBar extends View {
      * @param pos the pos to set the value for
      */
 
-    private float getPinValue(int pos) {
-        int delta = pos - getMarginLeft();
+    private float getPinValue(float pos) {
+        float delta = pos - getMarginLeft();
         if (delta < 0) delta = 0;
 
         Float val = null;
-        val = mTickMap.get(pos);
+        //val = mTickMap.get(pos);
         if (val == null) {
             val = delta * 1.f / getBarLength() * (mTickEnd - mTickStart) + mTickStart;
-            if (val >= mTickStart && val <= mTickEnd)
-                mTickMap.put(pos, val);
+            //if (val >= mTickStart && val <= mTickEnd)
+                //mTickMap.put(pos, val);
         }
         return val;
     }
