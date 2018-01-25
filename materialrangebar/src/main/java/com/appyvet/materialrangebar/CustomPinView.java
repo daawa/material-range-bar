@@ -1,7 +1,7 @@
 package com.appyvet.materialrangebar;
 
+import android.animation.ValueAnimator;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,79 +12,63 @@ import android.view.ViewGroup;
 class CustomPinView extends PinView {
     View customView;
     boolean isPressed;
-    int layoutWidth, widMode = MeasureSpec.AT_MOST;
-    int layoutHeight, heightMode = MeasureSpec.AT_MOST;
+
+    float pinViewStubRadius;
+    float mExpandedPinRadiusStart;
+    float mExpandedPinRadius;
+
+    int layoutWidth = ViewGroup.LayoutParams.WRAP_CONTENT, widMode = MeasureSpec.UNSPECIFIED;
+    int layoutHeight = ViewGroup.LayoutParams.WRAP_CONTENT, heightMode = MeasureSpec.UNSPECIFIED;
+
     RangeBar bar;
 
     int width, height;
 
-    public CustomPinView(View cv, RangeBar rangeBar) {
+    public CustomPinView(View cv, ValueChanged listener, RangeBar rangeBar) {
         super(rangeBar.getContext());
+        this.listener = listener;
         this.bar = rangeBar;
         customView = cv;
 
         firstLayout();
-
-        bar.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                firstLayout();
-                /*
-                layoutWidth = bar.getHeight() > 0 ? bar.getHeight() : 10000;
-                layoutHeight = bar.getWidth() > 0? bar.getWidth() : 10000;
-
-                if(customView.getLayoutParams() != null){
-                    ViewGroup.LayoutParams params = customView.getLayoutParams();
-                    if(params.width > 0){
-                        layoutHeight = params.width;
-                        widMode = MeasureSpec.EXACTLY;
-                    }
-                    if(params.height > 0){
-                        layoutWidth = params.height;
-                        heightMode = MeasureSpec.EXACTLY;
-                    }
-                }
-
-                layoutCustomView(layoutHeight, widMode, layoutWidth, heightMode);
-
-                width = customView.getWidth();
-                height = customView.getHeight();
-                bar.setPinViewStubRadius(width / 2);
-                */
-            }
-        });
     }
 
-    private void firstLayout(){
-        layoutWidth = bar.getHeight() > 0 ? bar.getHeight() : 10000;
-        layoutHeight = bar.getWidth() > 0? bar.getWidth() : 10000;
+    @Override
+    public void invalidate() {
+        bar.invalidate();
+    }
 
-        if(customView.getLayoutParams() != null){
+    private void firstLayout() {
+
+        if (customView.getLayoutParams() != null) {
             ViewGroup.LayoutParams params = customView.getLayoutParams();
-            if(params.width > 0){
-                layoutHeight = params.width;
+            if (params.width > 0) {
+                layoutWidth = params.width;
                 widMode = MeasureSpec.EXACTLY;
             }
-            if(params.height > 0){
-                layoutWidth = params.height;
+            if (params.height > 0) {
+                layoutHeight = params.height;
                 heightMode = MeasureSpec.EXACTLY;
             }
         }
 
-        layoutCustomView(layoutHeight, widMode, layoutWidth, heightMode);
+        layoutCustomView(layoutWidth, widMode, layoutHeight, heightMode);
         width = customView.getWidth();
         height = customView.getHeight();
         bar.setPinViewStubRadius(width / 2);
+        pinViewStubRadius = width / 2;
+        setTemporaryPinsSizeRatio(1.0f, 1.0f);
+
     }
 
     private void layoutCustomView(int w, int wm, int h, int hm) {
         if (w == customView.getWidth() && h == customView.getHeight()) {
             return;
         }
-        int oldw = customView.getWidth();
+        int oldWidth = customView.getWidth();
         customView.measure(MeasureSpec.makeMeasureSpec(w, wm), MeasureSpec.makeMeasureSpec(h, hm));
         int left = customView.getLeft() > 0 ? customView.getLeft() : bar.getPaddingLeft();
-        left -= (customView.getMeasuredWidth() - oldw) / 2;
+        left -= (customView.getMeasuredWidth() - oldWidth) / 2;
         int top = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
         this.customView.layout(left, top, left + customView.getMeasuredWidth(), top + customView.getMeasuredHeight());
 
@@ -95,19 +79,54 @@ class CustomPinView extends PinView {
 
     }
 
-    @Override
-    public void setPinZoom(float zoom, float padding) {
+    public void setTemporaryPinsSizeRatio(float from, float to) {
+        mExpandedPinRadiusStart = pinViewStubRadius * from;
+        mExpandedPinRadius = pinViewStubRadius * to;
+    }
+
+    private void setPinZoom(float zoom) {
         layoutCustomView((int) (width * zoom), MeasureSpec.EXACTLY, (int) (height * zoom), MeasureSpec.EXACTLY);
     }
 
     @Override
     public void release() {
         isPressed = false;
+        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
+            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadius, mExpandedPinRadiusStart);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float val = (Float) (animation.getAnimatedValue());
+                    float zoom = val / pinViewStubRadius;
+                    CustomPinView.this.setPinZoom(zoom);
+                    invalidate();
+                }
+            });
+            animator.start();
+        } else {
+            invalidate();
+        }
     }
 
     @Override
     public void press() {
         isPressed = true;
+        if (mExpandedPinRadius != mExpandedPinRadiusStart) {
+            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadiusStart, mExpandedPinRadius);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float val = (Float) (animation.getAnimatedValue());
+                    float zoom = val / pinViewStubRadius;
+                    CustomPinView.this.setPinZoom(zoom);
+                    invalidate();
+                }
+            });
+            animator.start();
+        }
+
     }
 
     @Override
@@ -126,14 +145,24 @@ class CustomPinView extends PinView {
     @Override
     public float getX() {
         float x = customView.getLeft() + customView.getWidth() / 2;
-        //Log.w("getx", "x :" + x);
         return x;
     }
 
+    String val;
 
     @Override
-    public void setXValue(String x) {
+    public void setValue(String x) {
+        val = x;
+    }
 
+    @Override
+    public String getValue() {
+        return val;
+    }
+
+    @Override
+    public void updateLayout() {
+        layoutCustomView(layoutWidth, widMode, layoutHeight, heightMode);
     }
 
     @Override

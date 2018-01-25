@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="50dp"
-    android:gravity="center_horizontal">
+    android:layout_height="100dp"
+    android:padding="1dp"
+    android:gravity="center_horizontal"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <ImageView
-        android:layout_marginTop="24dp"
+        android:layout_above="@+id/text"
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,9 +17,11 @@
 
     <TextView
         android:id="@+id/text"
+        android:height="24dp"
+        android:layout_marginTop="2.2dp"
+        android:layout_alignParentBottom="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/icon"
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:text="￥30"

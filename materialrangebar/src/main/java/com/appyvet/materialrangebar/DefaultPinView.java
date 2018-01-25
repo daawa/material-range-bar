@@ -13,6 +13,7 @@
 
 package com.appyvet.materialrangebar;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -21,14 +22,16 @@ import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
+
 
 
 /**
  * Represents a thumb in the RangeBar slider. This is the handle for the slider
  * that is pressed and slid.
  */
-class InnerPinView extends PinView {
+class DefaultPinView extends PinView {
 
     // Private Constants ///////////////////////////////////////////////////////
 
@@ -41,8 +44,22 @@ class InnerPinView extends PinView {
     // drawn but no value is given.
     private static final float DEFAULT_THUMB_RADIUS_DP = 14;
 
+    private static final float DEFAULT_EXPANDED_PIN_RADIUS_DP = 20;
+    private static final float DEFAULT_PIN_PADDING_DP = 18;
+
+    public static final float DEFAULT_MIN_PIN_FONT_SP = 12;
+    public static final float DEFAULT_MAX_PIN_FONT_SP = 24;
+
     // Member Variables ////////////////////////////////////////////////////////
 
+    private float mThumbRadiusDP = DEFAULT_EXPANDED_PIN_RADIUS_DP;
+    private float mExpandedPinRadius = DEFAULT_EXPANDED_PIN_RADIUS_DP;
+
+    boolean mArePinsTemporary = true;
+    private float PinPadding;
+    private float tmpPinPadding;
+    private float mMaxPinFont = DEFAULT_MAX_PIN_FONT_SP;
+    private float mMinPinFont = DEFAULT_MIN_PIN_FONT_SP;
     // Radius (in pixels) of the touch area of the thumb.
     private float mTargetRadiusPx;
 
@@ -68,12 +85,11 @@ class InnerPinView extends PinView {
 
     private ColorFilter mPinFilter;
 
-    private float mPinPadding;
-
     private float mTextYPadding;
 
     private Rect mBounds = new Rect();
 
+    RangeBar bar;
     private Resources mRes;
 
     private float mDensity;
@@ -86,18 +102,13 @@ class InnerPinView extends PinView {
 
     private IRangeBarFormatter formatter;
 
-    private float mMinPinFont = RangeBar.DEFAULT_MIN_PIN_FONT_SP;
-
-    private float mMaxPinFont = RangeBar.DEFAULT_MAX_PIN_FONT_SP;
-
-    private boolean mPinsAreTemporary;
-
-    private boolean mHasBeenPressed = false;
+    private boolean mPinsAreTemporary = true;
 
     // Constructors ////////////////////////////////////////////////////////////
 
-    public InnerPinView(Context context) {
+    public DefaultPinView(Context context) {
         super(context);
+        mExpandedPinRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_EXPANDED_PIN_RADIUS_DP, context.getResources().getDisplayMetrics());
     }
 
     // Initialization //////////////////////////////////////////////////////////
@@ -110,42 +121,41 @@ class InnerPinView extends PinView {
      * The view is created empty with a default constructor. Use init to set all the initial
      * variables for the pin
      *
-     * @param ctx                 Context
      * @param y                   The y coordinate to raw the pin (i.e. the bar location)
-     * @param pinRadiusDP         the initial size of the pin
      * @param pinColor            the color of the pin
      * @param textColor           the color of the value text in the pin
      * @param circleRadius        the radius of the selector circle
      * @param circleColor         the color of the selector circle
      * @param circleBoundaryColor The color of the selector circle boundary
      * @param circleBoundarySize  The size of the selector circle boundary line
-     * @param minFont             the minimum font size for the pin text
-     * @param maxFont             the maximum font size for the pin text
      * @param pinsAreTemporary    whether to show the pin initially or just the circle
      */
-    public void init(Context ctx, float y, float pinRadiusDP, int pinColor, int textColor,
-                     float circleRadius, int circleColor, int circleBoundaryColor, float circleBoundarySize, float minFont, float maxFont, boolean pinsAreTemporary) {
+    public void init(RangeBar bar, float y, int pinColor, int textColor,
+                     float circleRadius, int circleColor, int circleBoundaryColor, float circleBoundarySize,  boolean pinsAreTemporary) {
 
-        mRes = ctx.getResources();
-        mPin = mRes.getDrawable( R.drawable.rotate);
+        this.bar = bar;
+        mRes = bar.getContext().getResources();
+        mPin = ContextCompat.getDrawable(bar.getContext(), R.drawable.rotate);
 
         mDensity = getResources().getDisplayMetrics().density;
-        mMinPinFont = minFont / mDensity;
-        mMaxPinFont = maxFont / mDensity;
+
+//        mMinPinFont = mMinPinFont/mDensity;
+//        mMaxPinFont = mMaxPinFont/mDensity;
+
         mPinsAreTemporary = pinsAreTemporary;
 
-        mPinPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15,
+        PinPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_PIN_PADDING_DP,
                 mRes.getDisplayMetrics());
         mCircleRadiusPx = circleRadius;
         mTextYPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3.5f,
                 mRes.getDisplayMetrics());
         // If one of the attributes are set, but the others aren't, set the
         // attributes to default
-        if (pinRadiusDP == -1) {
+        if (mExpandedPinRadius == -1) {
             mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_THUMB_RADIUS_DP,
                     mRes.getDisplayMetrics());
         } else {
-            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pinRadiusDP,
+            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mExpandedPinRadius,
                     mRes.getDisplayMetrics());
         }
         //Set text size in px from dp
@@ -181,6 +191,11 @@ class InnerPinView extends PinView {
         mY = y;
     }
 
+    @Override
+    public void invalidate() {
+        bar.invalidate();
+    }
+
     /**
      * Set the x value of the pin
      *
@@ -208,8 +223,29 @@ class InnerPinView extends PinView {
      *
      * @param x String value of the pin
      */
-    public void setXValue(String x) {
+    public void setValue(String x) {
         mValue = x;
+    }
+
+    /**
+     * If this is set, the thumb images will be replaced with a circle of the
+     * specified radius. Default width = 12dp.
+     *
+     * @param pinRadius Float specifying the radius of the thumbs to be drawn. Value should be in DP
+     */
+    public void setPinRadius(float pinRadius) {
+        mExpandedPinRadius = pinRadius;
+        invalidate();
+    }
+
+    @Override
+    public String getValue() {
+        return mValue;
+    }
+
+    @Override
+    public void updateLayout() {
+
     }
 
     /**
@@ -228,26 +264,58 @@ class InnerPinView extends PinView {
      */
     public void press() {
         mIsPressed = true;
-        mHasBeenPressed = true;
+
+        if (mArePinsTemporary) {
+            ValueAnimator animator = ValueAnimator.ofFloat(0, mExpandedPinRadius);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mThumbRadiusDP = (Float) (animation.getAnimatedValue());
+                    DefaultPinView.this.setSize(mThumbRadiusDP, PinPadding * animation.getAnimatedFraction());
+                    invalidate();
+                }
+            });
+            animator.start();
+        }
+
+    }
+
+    public void setPinTemporary(boolean val){
+        mArePinsTemporary = val;
     }
 
     /**
      * Set size of the pin and padding for use when animating pin enlargement on press
      *
-     * @param zoom    the zoom ratio of the pin radius
+     * @param size    the size of the pin radius
      * @param padding the size of the padding
      */
-    public void setPinZoom(float zoom, float padding) {
-        mPinPadding = (int) padding;
-        mPinRadiusPx = (int) (zoom * mPinRadiusPx);
+    public void setSize(float size, float padding) {
+        tmpPinPadding = (int) padding;
+        mPinRadiusPx = (int) size;
         invalidate();
     }
 
-    /**
-     * Release the pin, sets pressed state to false
-     */
+
     public void release() {
         mIsPressed = false;
+        if (mArePinsTemporary) {
+            ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadius, 0);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mThumbRadiusDP = (Float) (animation.getAnimatedValue());
+                    DefaultPinView.this.setSize(mThumbRadiusDP,
+                            tmpPinPadding - (tmpPinPadding * animation.getAnimatedFraction()));
+                    invalidate();
+                }
+            });
+            animator.start();
+        } else {
+            invalidate();
+        }
     }
 
     /**
@@ -261,7 +329,7 @@ class InnerPinView extends PinView {
      */
     public boolean isInTargetZone(float x, float y) {
         return (Math.abs(x - mX) <= mTargetRadiusPx
-                && Math.abs(y - mY + mPinPadding) <= mTargetRadiusPx);
+                && Math.abs(y - mY + tmpPinPadding) <= mTargetRadiusPx);
     }
 
     //Draw the circle regardless of pressed state. If pin size is >0 then also draw the pin and text
@@ -273,10 +341,10 @@ class InnerPinView extends PinView {
 
         canvas.drawCircle(mX, mY, mCircleRadiusPx, mCirclePaint);
         //Draw pin if pressed
-        if (mPinRadiusPx > 0 && (mHasBeenPressed || !mPinsAreTemporary)) {
+        if (mPinRadiusPx > 0 && (mIsPressed || !mPinsAreTemporary)) {
             mBounds.set((int) mX - mPinRadiusPx,
-                    (int) mY - (mPinRadiusPx * 2) - (int) mPinPadding,
-                    (int) mX + mPinRadiusPx, (int) mY - (int) mPinPadding);
+                    (int) mY - (mPinRadiusPx * 2) - (int) tmpPinPadding,
+                    (int) mX + mPinRadiusPx, (int) mY - (int) tmpPinPadding);
             mPin.setBounds(mBounds);
             String text = mValue;
 
@@ -290,7 +358,7 @@ class InnerPinView extends PinView {
             mPin.setColorFilter(mPinFilter);
             mPin.draw(canvas);
             canvas.drawText(text,
-                    mX, mY - mPinRadiusPx - mPinPadding + mTextYPadding,
+                    mX, mY - mPinRadiusPx - tmpPinPadding + mTextYPadding,
                     mTextPaint);
         }
         super.draw(canvas);
