@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 class CustomPinView extends PinView {
     View customView;
-    boolean isPressed;
 
     float pinViewStubRadius;
     float mExpandedPinRadiusStart;
@@ -90,7 +89,7 @@ class CustomPinView extends PinView {
 
     @Override
     public void release() {
-        isPressed = false;
+        customView.setPressed(false);
         if (mExpandedPinRadius != mExpandedPinRadiusStart) {
             ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadius, mExpandedPinRadiusStart);
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -111,7 +110,7 @@ class CustomPinView extends PinView {
 
     @Override
     public void press() {
-        isPressed = true;
+        customView.setPressed(true);
         if (mExpandedPinRadius != mExpandedPinRadiusStart) {
             ValueAnimator animator = ValueAnimator.ofFloat(mExpandedPinRadiusStart, mExpandedPinRadius);
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -131,7 +130,7 @@ class CustomPinView extends PinView {
 
     @Override
     public boolean isPressed() {
-        return isPressed;
+        return customView.isPressed();
     }
 
     @Override

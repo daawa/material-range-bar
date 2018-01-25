@@ -1259,6 +1259,7 @@ public class RangeBar extends View {
             }
             rightPin.setPinValue(getRightPinValue());
 
+            /*
             if (!drawTicks && mListener != null) {
                 mListener.onRangeChangeListener(this, drawTicks,
                         (int)mLeftPos, (int)mRightPos,
@@ -1275,7 +1276,7 @@ public class RangeBar extends View {
                             getLeftPinValue(),
                             getRightPinValue());
                 }
-            }
+            }*/
         }
 
     }

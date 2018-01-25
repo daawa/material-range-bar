@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.appyvet.materialrangebar.PinView;
 import com.appyvet.materialrangebar.RangeBar;
@@ -128,6 +129,7 @@ public class CustomActivity extends Activity {
             }
         }, 3000);
 
+
         rangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,6 +156,8 @@ public class CustomActivity extends Activity {
                                               int rightPinIndex, String leftPinValue, String rightPinValue) {
                 leftIndexValue.setText("" + leftPinIndex);
                 rightIndexValue.setText("" + rightPinIndex);
+
+                Toast.makeText(getApplication(), " left " + leftPinValue + " right:" + rightPinValue, Toast.LENGTH_LONG).show();
             }
 
         });
