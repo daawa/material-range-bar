@@ -389,7 +389,7 @@ public class RangeBar extends View {
                 float left = drawTicks ? leftTick : mLeftPos;
                 float right = drawTicks ? rightTick : mRightPos;
                 mListener.onRangeChangeListener(this, drawTicks,
-                        (int)left, (int)right,
+                        (int) left, (int) right,
                         getLeftPinValue(),
                         getRightPinValue());
             }
@@ -805,22 +805,22 @@ public class RangeBar extends View {
         if (drawTicks) {
             left = findTick4Pos(mLeftPos);
             right = findTick4Pos(mRightPos);
-            mLeftPos = findPos4Tick((int)left);
-            mRightPos = findTick4Pos((int)right);
+            mLeftPos = findPos4Tick((int) left);
+            mRightPos = findTick4Pos((int) right);
         }
 
         createPins();
 
         if (mListener != null) {
             mListener.onRangeChangeListener(this, drawTicks,
-                    (int)left, (int)right,
+                    (int) left, (int) right,
                     getLeftPinValue(),
                     getRightPinValue());
         }
     }
 
     private float getPosition4Val(float val) {
-        if(val < mTickStart) val = mTickStart;
+        if (val < mTickStart) val = mTickStart;
 
         float pos = ((val - mTickStart) / (mTickEnd - mTickStart) * getBarLength()) + getMarginLeft();
 
@@ -862,7 +862,17 @@ public class RangeBar extends View {
      *
      * @return the string value of the left pin.
      */
-    public String getLeftPinValue() {
+    public float getLeftPinValue() {
+        float val = getPinValue(mLeftPos);
+
+        if (val < 0.1f) {
+            Log.w("val", "val:" + val);
+        }
+
+        return val;
+    }
+
+    public String getLeftStringPinValue() {
         float val = getPinValue(mLeftPos);
 
         if (val < 0.1f) {
@@ -877,9 +887,9 @@ public class RangeBar extends View {
      *
      * @return the string value of the right pin.
      */
-    public String getRightPinValue() {
-        float val = getPinValue(mRightPos);
-        return mPinTextFormatter.getText(String.valueOf(val));
+    public float getRightPinValue() {
+        return getPinValue(mRightPos);
+        //return mPinTextFormatter.getText(String.valueOf(val));
     }
 
     /**
@@ -958,9 +968,7 @@ public class RangeBar extends View {
                 float right = drawTicks ? mTickCount : mRightPos;
                 if (mListener != null) {
                     mListener.onRangeChangeListener(this, drawTicks,
-                            (int)left, (int)right,
-                            String.valueOf(tickStart),
-                            String.valueOf(tickEnd));
+                            (int) left, (int) right, tickStart, tickEnd);
                 }
 
             } else {
@@ -1210,7 +1218,7 @@ public class RangeBar extends View {
 
         if (mListener != null) {
             mListener.onRangeChangeListener(this, drawTicks,
-                    (int)left, (int)right,
+                    (int) left, (int) right,
                     getLeftPinValue(),
                     getRightPinValue());
         }
@@ -1300,7 +1308,7 @@ public class RangeBar extends View {
 
             if (newLeftPos != (int) thumb.getX()) {
                 thumb.setX(newLeftPos);
-                thumb.setPinValue(mPinTextFormatter.getText(String.valueOf(getPinValue(newLeftPos))));
+                thumb.setPinValue(getPinValue(newLeftPos));
             }
         }
 
@@ -1324,7 +1332,7 @@ public class RangeBar extends View {
         if (val == null) {
             val = delta * 1.f / getBarLength() * (mTickEnd - mTickStart) + mTickStart;
             //if (val >= mTickStart && val <= mTickEnd)
-                //mTickMap.put(pos, val);
+            //mTickMap.put(pos, val);
         }
         return val;
     }
@@ -1367,7 +1375,7 @@ public class RangeBar extends View {
     public interface OnRangeBarChangeListener {
 
         void onRangeChangeListener(RangeBar rangeBar, boolean posIsTickIndex, int leftPos,
-                                   int rightPos, String leftPinValue, String rightPinValue);
+                                   int rightPos, float leftPinValue, float rightPinValue);
     }
 
     public interface PinTextFormatter {

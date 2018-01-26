@@ -15,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appyvet.materialrangebar.IRangeBarFormatter;
 import com.appyvet.materialrangebar.PinView;
 import com.appyvet.materialrangebar.RangeBar;
 
@@ -44,6 +45,18 @@ public class CustomActivity extends Activity {
     private int mSelectorColor;
 
     private int mSelectorBoundaryColor;
+
+    //keep one num following dot
+    protected IRangeBarFormatter formatter= new IRangeBarFormatter() {
+        @Override
+        public String format(String value) {
+            int index = value.indexOf(".");
+            if(index > 0 && index < value.length() - 2){
+                value = value.substring(0, index + 2);
+            }
+            return value;
+        }
+    };
 
     // Saves the state upon rotating the screen/restarting the activity
     @Override
@@ -91,19 +104,21 @@ public class CustomActivity extends Activity {
         rangebar.setCustomSelector(
                 left, new PinView.ValueChanged() {
                     @Override
-                    public String onValueChanged(String value) {
+                    public String onValueChanged(float value) {
+                        String val = formatter.format(String.valueOf(value));
                         TextView t = left.findViewById(R.id.text);
-                        t.setText("#" + value);
-                        return value;
+                        t.setText("#" + val);
+                        return val;
 
                     }
                 },
                 right, new PinView.ValueChanged() {
                     @Override
-                    public String onValueChanged(String value) {
+                    public String onValueChanged(float value) {
+                        String val = formatter.format(String.valueOf(value));
                         TextView t = right.findViewById(R.id.text);
-                        t.setText("$" + value);
-                        return value;
+                        t.setText("$" + val);
+                        return val;
                     }
                 });
 
@@ -153,13 +168,12 @@ public class CustomActivity extends Activity {
         rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, boolean drawTicks, int leftPinIndex,
-                                              int rightPinIndex, String leftPinValue, String rightPinValue) {
+                                              int rightPinIndex, float leftPinValue, float rightPinValue) {
                 leftIndexValue.setText("" + leftPinIndex);
                 rightIndexValue.setText("" + rightPinIndex);
 
-                Toast.makeText(getApplication(), " left " + leftPinValue + " right:" + rightPinValue, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplication(), " left " + leftPinValue + " right:" + rightPinValue, Toast.LENGTH_SHORT).show();
             }
-
         });
 
         // Sets the indices themselves upon input from the user

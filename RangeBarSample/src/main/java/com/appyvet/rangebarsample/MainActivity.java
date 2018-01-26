@@ -145,11 +145,11 @@ public class MainActivity extends Activity implements
         final EditText leftIndexValue = (EditText) findViewById(R.id.leftIndexValue);
         final EditText rightIndexValue = (EditText) findViewById(R.id.rightIndexValue);
 
-        // Sets the display values of the indices
+
         rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, boolean drawTicks, int leftPinIndex,
-                                              int rightPinIndex, String leftPinValue, String rightPinValue) {
+                                              int rightPinIndex, float leftPinValue, float rightPinValue) {
                 leftIndexValue.setText("" + leftPinIndex);
                 rightIndexValue.setText("" + rightPinIndex);
             }

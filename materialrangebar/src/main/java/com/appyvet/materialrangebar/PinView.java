@@ -33,13 +33,16 @@ public abstract class PinView extends View {
      *
      * @param x String value of the pin
      */
-    public final void setPinValue(String x){
+    public final void setPinValue(float x){
         String old = getValue();
-        if(listener != null){
-            x = listener.onValueChanged(x);
-        }
 
-        setValue(x);
+        String val = null;
+        if(listener != null){
+            val = listener.onValueChanged(x);
+        }
+        val = val == null? String.valueOf(x): val;
+
+        setValue(val);
         if(old == null || old.length() != (getValue() == null? "" : getValue()).length()){
             updateLayout();
         }
@@ -62,6 +65,6 @@ public abstract class PinView extends View {
     public abstract boolean isInTargetZone(float x, float y);
 
     public interface ValueChanged{
-        String onValueChanged(String value);
+        String onValueChanged(float value);
     }
 }
