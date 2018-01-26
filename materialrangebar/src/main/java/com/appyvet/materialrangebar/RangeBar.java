@@ -892,6 +892,11 @@ public class RangeBar extends View {
         //return mPinTextFormatter.getText(String.valueOf(val));
     }
 
+    public String getRightStringPinValue() {
+        float val = getPinValue(mRightPos);
+        return mPinTextFormatter.getText(String.valueOf(val));
+    }
+
     /**
      * Gets the index of the left-most pin.
      *
@@ -930,6 +935,7 @@ public class RangeBar extends View {
         createConnectingLine();
         super.setEnabled(enabled);
     }
+
 
     public void setPinTextFormatter(PinTextFormatter pinTextFormatter) {
         this.mPinTextFormatter = pinTextFormatter;
