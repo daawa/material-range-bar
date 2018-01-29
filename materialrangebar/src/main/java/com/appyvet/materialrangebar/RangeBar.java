@@ -228,16 +228,16 @@ public class RangeBar extends View {
         bundle.putFloat("TICK_END", mTickEnd);
         bundle.putInt("TICK_COLOR", mTickColor);
 
-        bundle.getInt("TICK_HEIGHT_DP", mTickHeight);
-        bundle.getInt("BAR_WEIGHT", mBarWeight);
+        bundle.putInt("TICK_HEIGHT_DP", mTickHeight);
+        bundle.putInt("BAR_WEIGHT", mBarWeight);
         bundle.putInt("BAR_COLOR", mBarColor);
-        bundle.getInt("CONNECTING_LINE_WEIGHT", mConnectingLineWeight);
+        bundle.putInt("CONNECTING_LINE_WEIGHT", mConnectingLineWeight);
         bundle.putInt("CONNECTING_LINE_COLOR", mConnectingLineColor);
 
         bundle.putInt("CIRCLE_COLOR", mCircleColor);
         bundle.putInt("CIRCLE_BOUNDARY_COLOR", mCircleBoundaryColor);
-        bundle.getInt("CIRCLE_BOUNDARY_WIDTH", mCircleBoundarySize);
-        bundle.getInt("BAR_PADDING_BOTTOM", mBarPaddingBottom);
+        bundle.putInt("CIRCLE_BOUNDARY_WIDTH", mCircleBoundarySize);
+        bundle.putInt("BAR_PADDING_BOTTOM", mBarPaddingBottom);
         bundle.putBoolean("IS_RANGE_BAR", mIsRangeBar);
         bundle.putBoolean("ARE_PINS_TEMPORARY", mArePinsTemporary);
         bundle.putFloat("LEFT_INDEX", mLeftPos);
