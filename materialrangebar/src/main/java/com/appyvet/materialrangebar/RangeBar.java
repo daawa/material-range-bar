@@ -1216,11 +1216,19 @@ public class RangeBar extends View {
 
         mLeftPos = (int) mLeftThumb.getX();
         mRightPos = (int) mRightThumb.getX();
+
         float left = mLeftPos, right = mRightPos;
         if (drawTicks) {
             left = findTick4Pos(mLeftPos);
             right = findTick4Pos(mRightPos);
+            mLeftPos = findPos4Tick((int) left);
+            mRightPos = findPos4Tick((int) right);
+            mLeftThumb.setX(mLeftPos);
+            mRightThumb.setX(mRightPos);
         }
+
+        mLeftThumb.setPinValue(getLeftPinValue());
+        mRightThumb.setPinValue(getRightPinValue());
 
         if (mListener != null) {
             mListener.onRangeChangeListener(this, drawTicks,
@@ -1307,9 +1315,8 @@ public class RangeBar extends View {
      * @param thumb the thumb to release
      */
     private void releasePin(final PinView thumb) {
-        int leftTick = 0;
         if (drawTicks) {
-            leftTick = findTick4Pos((int) thumb.getX());
+            int leftTick = findTick4Pos((int) thumb.getX());
             int newLeftPos = findPos4Tick(leftTick);
 
             if (newLeftPos != (int) thumb.getX()) {

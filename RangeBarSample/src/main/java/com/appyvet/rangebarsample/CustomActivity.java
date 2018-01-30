@@ -169,8 +169,8 @@ public class CustomActivity extends Activity {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, boolean drawTicks, int leftPinIndex,
                                               int rightPinIndex, float leftPinValue, float rightPinValue) {
-                leftIndexValue.setText("" + leftPinIndex);
-                rightIndexValue.setText("" + rightPinIndex);
+                leftIndexValue.setText("i:" + leftPinIndex + " v:" + leftPinValue);
+                rightIndexValue.setText("i:" + rightPinIndex + " v:" + rightPinValue);
 
                 Toast.makeText(getApplication(), " left " + leftPinValue + " right:" + rightPinValue, Toast.LENGTH_SHORT).show();
             }
