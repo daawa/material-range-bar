@@ -512,10 +512,15 @@ public class RangeBar extends View {
     }
 
     public void setDrawTicks(boolean drawTicks) {
-        this.drawTicks = drawTicks;
+        if (this.drawTicks != drawTicks) {
+            this.drawTicks = drawTicks;
+            if (drawTicks && mTickCount < 2) {
+                throw new IllegalArgumentException("if set drawTicks, tick count must be greater than 1");
+            }
+        }
     }
 
-    public void setTickConfig(int start, int end, int count) {
+    public void setTickConfig(float start, float end, int count) {
 
         int tickCount = count;
         if (isValidTickCount(tickCount)) {
@@ -720,7 +725,7 @@ public class RangeBar extends View {
 
     private int findPos4Tick(int tickIndex) {
         int len = getBarLength();
-        int pos = (int) ((tickIndex * 1.0f) / mTickCount * len);
+        int pos = (int) ((tickIndex * 1.0f) / (mTickCount - 1) * len);
         if (pos > len) pos = len;
 
         return pos + getMarginLeft();
@@ -730,10 +735,10 @@ public class RangeBar extends View {
     private int findTick4Pos(float pos) {
         int len = getBarLength();
         pos -= getMarginLeft();
-
+        int seg = mTickCount - 1;
         for (int i = 0; i < mTickCount; i++) {
-            float lt = i * 1.f / mTickCount * len;
-            float rt = (i + 1) * 1.f / mTickCount * len;
+            float lt = i * 1.f / seg * len;
+            float rt = (i + 1) * 1.f / seg * len;
             if (pos >= lt && pos <= rt) {
                 float ld = pos - lt, rd = rt - pos;
                 if (ld < rd) return i;
@@ -962,7 +967,7 @@ public class RangeBar extends View {
             final float tickStart = ta.getFloat(R.styleable.RangeBar_mrb_tickStart, DEFAULT_TICK_START);
             final float tickEnd = ta.getFloat(R.styleable.RangeBar_mrb_tickEnd, DEFAULT_TICK_END);
             final int tickCount = ta.getInt(R.styleable.RangeBar_mrb_tickCount, DEFAULT_TICK_COUNT);
-            drawTicks = ta.getBoolean(R.styleable.RangeBar_mrb_drawTicks, false);
+            setDrawTicks(ta.getBoolean(R.styleable.RangeBar_mrb_drawTicks, false));
             if (isValidTickCount(tickCount)) {
                 mTickCount = tickCount;
                 mTickStart = tickStart;
@@ -971,7 +976,7 @@ public class RangeBar extends View {
                 mRightPos = getMarginRight() + getBarLength();
 
                 float left = drawTicks ? 0 : mLeftPos;
-                float right = drawTicks ? mTickCount : mRightPos;
+                float right = drawTicks ? mTickCount - 1 : mRightPos;
                 if (mListener != null) {
                     mListener.onRangeChangeListener(this, drawTicks,
                             (int) left, (int) right, tickStart, tickEnd);
@@ -1316,7 +1321,7 @@ public class RangeBar extends View {
      */
     private void releasePin(final PinView thumb) {
         if (drawTicks) {
-            int leftTick = findTick4Pos((int) thumb.getX());
+            int leftTick = findTick4Pos(thumb.getX());
             int newLeftPos = findPos4Tick(leftTick);
 
             if (newLeftPos != (int) thumb.getX()) {

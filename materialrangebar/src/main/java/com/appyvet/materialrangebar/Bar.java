@@ -156,7 +156,7 @@ public class Bar {
 
         mNumSegments = tickCount - 1;
         mNumSegments = mNumSegments <= 0 ? 1 : mNumSegments;
-        mTickDistance = barLength / mNumSegments;
+        mTickDistance = (int) (barLength * 1.f / mNumSegments);
     }
 
     // Private Methods /////////////////////////////////////////////////////////
