@@ -38,7 +38,7 @@ public class Bar {
 
     private int mNumSegments;
 
-    private int mTickDistance;
+    private float mTickDistance;
 
     private final float mTickHeight;
 
@@ -74,7 +74,7 @@ public class Bar {
 
         mNumSegments = tickCount - 1;
         mNumSegments = mNumSegments <= 0 ? 1 : mNumSegments;
-        mTickDistance = length / mNumSegments;
+        mTickDistance = length * 1.f / mNumSegments;
         mTickDistance = mTickDistance <= 0 ? 0 : mTickDistance;
 
         mTickHeight = tickHeight;
@@ -156,7 +156,7 @@ public class Bar {
 
         mNumSegments = tickCount - 1;
         mNumSegments = mNumSegments <= 0 ? 1 : mNumSegments;
-        mTickDistance = (int) (barLength * 1.f / mNumSegments);
+        mTickDistance = (barLength * 1.f / mNumSegments);
     }
 
     // Private Methods /////////////////////////////////////////////////////////
