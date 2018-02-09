@@ -273,8 +273,8 @@ public class RangeBar extends View {
             mIsRangeBar = bundle.getBoolean("IS_RANGE_BAR");
             mArePinsTemporary = bundle.getBoolean("ARE_PINS_TEMPORARY");
 
-            mLeftPos = bundle.getInt("LEFT_INDEX");
-            mRightPos = bundle.getInt("RIGHT_INDEX");
+            mLeftPos = bundle.getFloat("LEFT_INDEX");
+            mRightPos = bundle.getFloat("RIGHT_INDEX");
             //mFirstSetTickCount = bundle.getBoolean("FIRST_SET_TICK_COUNT");
             adjustPin();
             super.onRestoreInstanceState(bundle.getParcelable("instanceState"));
