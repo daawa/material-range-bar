@@ -16,8 +16,6 @@ import static com.appyvet.materialrangebar.RangeBar.ANCHOR_RIGHT;
 
 class CustomPinView extends PinView {
 
-
-
     View customView;
     int anchor = ANCHOR_CENTER;
 
@@ -31,10 +29,6 @@ class CustomPinView extends PinView {
     RangeBar bar;
 
     int width, height;
-
-    public CustomPinView(View cv, ValueChanged listener, RangeBar rangeBar) {
-        this(cv, ANCHOR_CENTER, listener, rangeBar);
-    }
 
     public CustomPinView(View cv, int anchor, ValueChanged listener, RangeBar rangeBar) {
         super(rangeBar.getContext());
@@ -160,7 +154,7 @@ class CustomPinView extends PinView {
             case ANCHOR_LEFT:
                 left = (int) x;
                 break;
-            default:
+            default: //ANCHOR_CENTER
                 left = (int) x - customView.getWidth() / 2;
         }
         //customView.setLeft(left);
@@ -180,7 +174,7 @@ class CustomPinView extends PinView {
             case ANCHOR_LEFT:
                 x = left;
                 break;
-            default:
+            default: //ANCHOR_CENTER
                 x = left + customView.getWidth() / 2;
         }
 

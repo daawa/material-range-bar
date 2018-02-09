@@ -334,75 +334,14 @@ public class RangeBar extends View {
             mRightPos = getMarginLeft() + getBarLength();
         }
 
-        if (mIsRangeBar) {
-            if (customLeftThumb != null) {
-                if (!(mLeftThumb instanceof CustomPinView)) {
-                    mLeftThumb = new CustomPinView(customLeftThumb, leftAnchor, leftValListener, this);
-                }
-                mLeftThumb.updateLayout();
-            } else {
-                mLeftThumb = new DefaultPinView(ctx);
-                mLeftThumb.setFormatter(mFormatter);
-                ((DefaultPinView) mLeftThumb).init(this, barYPos, mPinColor, mTextColor, defaultCircleSize,
-                        mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
-            }
-        }
-
-        if (customRightThumb != null) {
-            if (!(mRightThumb instanceof CustomPinView)) {
-                mRightThumb = new CustomPinView(customRightThumb, rightAnchor, rightValListener, this);
-            }
-            mRightThumb.updateLayout();
-        } else {
-            mRightThumb = new DefaultPinView(ctx);
-            mRightThumb.setFormatter(mFormatter);
-            ((DefaultPinView) mRightThumb).init(this, barYPos, mPinColor, mTextColor, defaultCircleSize,
-                    mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
-        }
-
-        // Create the underlying bar.
-        final int marginLeft = getMarginLeft();
-        final int barLength = getBarLength();
-
-        mBar = new Bar(ctx, marginLeft, barYPos, barLength, mTickCount, mTickHeight, mTickColor,
-                mBarWeight, mBarColor);
-
-        float oldLeftPos = mLeftPos, oldRightPos = mRightPos;
-        int leftTick = 0, rightTick = 0;
-        // Initialize thumbs to the desired indices
-        if (mIsRangeBar) {
-            if (drawTicks) {
-                leftTick = findTick4Pos(mLeftPos);
-                mLeftPos = findPos4Tick(leftTick);
-            }
-            mLeftThumb.setX(mLeftPos);
-            mLeftThumb.setPinValue(getLeftPinValue());
-        }
-        if (drawTicks) {
-            rightTick = findTick4Pos(mRightPos);
-            mRightPos = findPos4Tick(rightTick);
-        }
-
-        mRightThumb.setX(mRightPos);
-        mRightThumb.setPinValue(getRightPinValue());
-
-
-        // Call the listener.
-        if (oldLeftPos != mLeftPos || oldRightPos != mRightPos) {
-            if (mListener != null) {
-                float left = drawTicks ? leftTick : mLeftPos;
-                float right = drawTicks ? rightTick : mRightPos;
-                mListener.onRangeChangeListener(this, drawTicks,
-                        (int) left, (int) right,
-                        getLeftPinValue(),
-                        getRightPinValue());
-            }
-        }
+        createBar();
+        createPins();
 
         // Create the line connecting the two thumbs.
         mConnectingLine = new ConnectingLine(ctx, barYPos, mConnectingLineWeight,
                 mConnectingLineColorStart, mConnectingLineColorEnd);
     }
+
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -1080,27 +1019,55 @@ public class RangeBar extends View {
 
         if (mIsRangeBar) {
             if (customLeftThumb != null) {
+                //removeView(mLeftThumb);
                 mLeftThumb = new CustomPinView(customLeftThumb, leftAnchor, leftValListener, this);
+                //addView(mLeftThumb);
             } else {
                 mLeftThumb = new DefaultPinView(ctx);
-                ((DefaultPinView) mLeftThumb).init(this, yPos, mPinColor, mTextColor, defaultCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, true);
+                ((DefaultPinView) mLeftThumb).init(this, yPos, mPinColor, mTextColor, defaultCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
             }
         }
 
         if (customRightThumb != null) {
+            //removeView(mRightThumb);
             mRightThumb = new CustomPinView(customRightThumb, rightAnchor, rightValListener, this);
+            //addView(mRightThumb);
         } else {
             mRightThumb = new DefaultPinView(ctx);
             ((DefaultPinView) mRightThumb)
-                    .init(this, yPos, mPinColor, mTextColor, defaultCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, true);
+                    .init(this, yPos, mPinColor, mTextColor, defaultCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
         }
 
+        float oldLeftPos = mLeftPos, oldRightPos = mRightPos;
+        int leftTick = 0, rightTick = 0;
         if (mIsRangeBar) {
+            if (drawTicks) {
+                leftTick = findTick4Pos(mLeftPos);
+                mLeftPos = findPos4Tick(leftTick);
+            }
+
             mLeftThumb.setX(mLeftPos);
             mLeftThumb.setPinValue(getLeftPinValue());
         }
+
+        if (drawTicks) {
+            rightTick = findTick4Pos(mRightPos);
+            mRightPos = findPos4Tick(rightTick);
+        }
         mRightThumb.setX(mRightPos);
         mRightThumb.setPinValue(getRightPinValue());
+
+        // Call the listener.
+        if (oldLeftPos != mLeftPos || oldRightPos != mRightPos) {
+            if (mListener != null) {
+                float left = drawTicks ? leftTick : mLeftPos;
+                float right = drawTicks ? rightTick : mRightPos;
+                mListener.onRangeChangeListener(this, drawTicks,
+                        (int) left, (int) right,
+                        getLeftPinValue(),
+                        getRightPinValue());
+            }
+        }
 
         invalidate();
     }

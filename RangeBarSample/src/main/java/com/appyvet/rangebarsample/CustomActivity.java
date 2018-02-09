@@ -162,6 +162,8 @@ public class CustomActivity extends Activity {
             }
         });
 
+        rangebar.setDrawTicks(true);
+
 
         indexButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

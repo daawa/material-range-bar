@@ -7,11 +7,10 @@
 
     <TextView
         android:id="@+id/text"
-        android:height="24dp"
         android:layout_marginTop="2.2dp"
         android:layout_gravity="bottom|right"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="24dp"
         android:layout_alignRight="@id/icon"
         android:gravity="center"
         android:text="￥30"
@@ -24,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="26.2dp"
         android:src="@drawable/tag_selector_price_left" />
 
 </FrameLayout>
