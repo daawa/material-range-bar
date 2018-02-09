@@ -2,15 +2,24 @@ package com.appyvet.materialrangebar;
 
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
+import static com.appyvet.materialrangebar.RangeBar.ANCHOR_CENTER;
+import static com.appyvet.materialrangebar.RangeBar.ANCHOR_LEFT;
+import static com.appyvet.materialrangebar.RangeBar.ANCHOR_RIGHT;
 
 /**
  * Created by zhangzhenwei on 2018/1/19.
  */
 
 class CustomPinView extends PinView {
+
+
+
     View customView;
+    int anchor = ANCHOR_CENTER;
 
     float pinViewStubRadius;
     float mExpandedPinRadiusStart;
@@ -24,7 +33,12 @@ class CustomPinView extends PinView {
     int width, height;
 
     public CustomPinView(View cv, ValueChanged listener, RangeBar rangeBar) {
+        this(cv, ANCHOR_CENTER, listener, rangeBar);
+    }
+
+    public CustomPinView(View cv, int anchor, ValueChanged listener, RangeBar rangeBar) {
         super(rangeBar.getContext());
+        this.anchor = anchor;
         this.listener = listener;
         this.bar = rangeBar;
         customView = cv;
@@ -71,6 +85,8 @@ class CustomPinView extends PinView {
         int top = (bar.getHeight() - customView.getMeasuredHeight()) / 2;
         this.customView.layout(left, top, left + customView.getMeasuredWidth(), top + customView.getMeasuredHeight());
 
+        Log.w("layout", "wid: " + customView.getWidth() + "measured wid:" + customView.getMeasuredWidth() + " anchor:"  + anchor);
+        invalidate();
     }
 
     @Override
@@ -136,14 +152,38 @@ class CustomPinView extends PinView {
     @Override
     public void setX(float x) {
 
-        int left = (int) x - customView.getWidth() / 2;
+        int left ;
+        switch (anchor) {
+            case ANCHOR_RIGHT:
+                left = (int) x - customView.getWidth();
+                break;
+            case ANCHOR_LEFT:
+                left = (int) x;
+                break;
+            default:
+                left = (int) x - customView.getWidth() / 2;
+        }
+        //customView.setLeft(left);
         customView.layout(left, customView.getTop(), left + customView.getMeasuredWidth(), customView.getTop() + customView.getMeasuredHeight());
         customView.invalidate();
     }
 
     @Override
     public float getX() {
-        float x = customView.getLeft() + customView.getWidth() / 2;
+
+        float x ;
+        int left = customView.getLeft();
+        switch (anchor) {
+            case ANCHOR_RIGHT:
+                x = customView.getRight();
+                break;
+            case ANCHOR_LEFT:
+                x = left;
+                break;
+            default:
+                x = left + customView.getWidth() / 2;
+        }
+
         return x;
     }
 

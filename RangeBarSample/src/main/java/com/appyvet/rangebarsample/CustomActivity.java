@@ -87,9 +87,10 @@ public class CustomActivity extends Activity {
         final View left = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_left, group, false);
         final View right = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_right, group, false);
 
-        right.setBackgroundColor(Color.CYAN);
+//        right.setBackgroundColor(Color.CYAN);
+//        left.setBackgroundColor(Color.parseColor("#a0aa0000"));
         rangebar.setCustomSelector(
-                left, new PinView.ValueChanged() {
+                left, RangeBar.ANCHOR_RIGHT, new PinView.ValueChanged() {
                     @Override
                     public String onValueChanged(float value) {
                         String val = formatter.format(String.valueOf(value));
@@ -99,7 +100,7 @@ public class CustomActivity extends Activity {
 
                     }
                 },
-                right, new PinView.ValueChanged() {
+                right, RangeBar.ANCHOR_LEFT, new PinView.ValueChanged() {
                     @Override
                     public String onValueChanged(float value) {
                         String val = formatter.format(String.valueOf(value));
@@ -124,12 +125,12 @@ public class CustomActivity extends Activity {
         //rangebar.setTemporaryPinsSizeRatio(1.5f);
         //rangebar.setTemporaryPins(false);
 
-        rangebar.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                rangebar.setRangePinsByValue(200, 1200);
-            }
-        }, 3000);
+//        rangebar.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                rangebar.setRangePinsByValue(200, 1200);
+//            }
+//        }, 3000);
 
 
         rangeButton.setOnClickListener(new View.OnClickListener() {

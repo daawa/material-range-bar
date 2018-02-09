@@ -55,6 +55,10 @@ import android.view.View;
  */
 public class RangeBar extends View {
 
+    public static final int ANCHOR_CENTER = 0x01;
+    public static final int ANCHOR_LEFT = ANCHOR_CENTER << 1;
+    public static final int ANCHOR_RIGHT = ANCHOR_CENTER << 2;
+
     // Member Variables ////////////////////////////////////////////////////////
 
     private static final String TAG = "RangeBar";
@@ -333,7 +337,7 @@ public class RangeBar extends View {
         if (mIsRangeBar) {
             if (customLeftThumb != null) {
                 if (!(mLeftThumb instanceof CustomPinView)) {
-                    mLeftThumb = new CustomPinView(customLeftThumb, leftValListener, this);
+                    mLeftThumb = new CustomPinView(customLeftThumb, leftAnchor, leftValListener, this);
                 }
                 mLeftThumb.updateLayout();
             } else {
@@ -346,7 +350,7 @@ public class RangeBar extends View {
 
         if (customRightThumb != null) {
             if (!(mRightThumb instanceof CustomPinView)) {
-                mRightThumb = new CustomPinView(customRightThumb, rightValListener, this);
+                mRightThumb = new CustomPinView(customRightThumb, rightAnchor, rightValListener, this);
             }
             mRightThumb.updateLayout();
         } else {
@@ -1076,7 +1080,7 @@ public class RangeBar extends View {
 
         if (mIsRangeBar) {
             if (customLeftThumb != null) {
-                mLeftThumb = new CustomPinView(customLeftThumb, leftValListener, this);
+                mLeftThumb = new CustomPinView(customLeftThumb, leftAnchor, leftValListener, this);
             } else {
                 mLeftThumb = new DefaultPinView(ctx);
                 ((DefaultPinView) mLeftThumb).init(this, yPos, mPinColor, mTextColor, defaultCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, true);
@@ -1084,7 +1088,7 @@ public class RangeBar extends View {
         }
 
         if (customRightThumb != null) {
-            mRightThumb = new CustomPinView(customRightThumb, rightValListener, this);
+            mRightThumb = new CustomPinView(customRightThumb, rightAnchor, rightValListener, this);
         } else {
             mRightThumb = new DefaultPinView(ctx);
             ((DefaultPinView) mRightThumb)
@@ -1252,7 +1256,7 @@ public class RangeBar extends View {
 
         PinView leftPin = mLeftThumb, rightPin = mRightThumb;
 
-        if (isRangeBar() && mLeftThumb.getX() > mRightThumb.getX()) {
+        if (isRangeBar() && mLeftThumb.getX() >= mRightThumb.getX()) {
             leftPin = mRightThumb;
             rightPin = mLeftThumb;
             if (mLeftThumb.isPressed()) {
@@ -1286,25 +1290,9 @@ public class RangeBar extends View {
             }
             rightPin.setPinValue(getRightPinValue());
 
-            /*
-            if (!drawTicks && mListener != null) {
-                mListener.onRangeChangeListener(this, drawTicks,
-                        (int)mLeftPos, (int)mRightPos,
-                        getLeftPinValue(),
-                        getRightPinValue());
-
-            } else if (mListener != null) {
-                int left = findTick4Pos(mLeftPos);
-                int right = findTick4Pos(mRightPos);
-
-                if (getValue4Tick(left) == getLeftPinValue() && getValue4Tick(right) == getRightPinValue()) {
-                    mListener.onRangeChangeListener(this, drawTicks,
-                            left, right,
-                            getLeftPinValue(),
-                            getRightPinValue());
-                }
-            }*/
         }
+
+        invalidate();
 
     }
 
@@ -1413,6 +1401,7 @@ public class RangeBar extends View {
 
     View customLeftThumb, customRightThumb;
     PinView.ValueChanged leftValListener, rightValListener;
+    int leftAnchor, rightAnchor;
 
     /**
      * set custom selectors
@@ -1421,10 +1410,17 @@ public class RangeBar extends View {
      * @param right the right selector view
      */
     public void setCustomSelector(@Nullable View left, @Nullable PinView.ValueChanged leftValListener, @Nullable View right, @Nullable PinView.ValueChanged rightValListener) {
+        setCustomSelector(left, ANCHOR_CENTER, leftValListener, right, ANCHOR_CENTER, rightValListener);
+    }
+
+
+    public void setCustomSelector(@Nullable View left, int leftAnchor, @Nullable PinView.ValueChanged leftValListener, @Nullable View right, int rightAnchor, @Nullable PinView.ValueChanged rightValListener) {
         customLeftThumb = left;
         this.leftValListener = leftValListener;
+        this.leftAnchor = leftAnchor;
         customRightThumb = right;
         this.rightValListener = rightValListener;
+        this.rightAnchor = rightAnchor;
 
         createPins();
     }

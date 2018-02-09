@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="100dp"
     android:padding="1dp"
-    android:gravity="center_horizontal"
-    android:clipChildren="false"
-    android:clipToPadding="false">
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/text"
+        android:height="24dp"
+        android:layout_marginTop="2.2dp"
+        android:layout_gravity="bottom|right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/icon"
+        android:gravity="center"
+        android:text="￥30"
+        android:textColor="#fd2951"
+        android:textSize="17dp" />
 
     <ImageView
         android:layout_above="@+id/text"
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="right|bottom"
+        android:layout_marginBottom="24dp"
         android:src="@drawable/tag_selector_price_left" />
 
-    <TextView
-        android:id="@+id/text"
-        android:height="24dp"
-        android:layout_marginTop="2.2dp"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="￥30"
-        android:textColor="#fd2951"
-        android:textSize="17dp" />
-
-</RelativeLayout>
+</FrameLayout>

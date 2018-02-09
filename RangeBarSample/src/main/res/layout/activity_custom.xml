@@ -21,8 +21,8 @@
         android:textSize="40sp"/>
 
     <com.appyvet.materialrangebar.RangeBar
-        android:paddingLeft="18dp"
-        android:paddingRight="36dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/rangebar1"
         android:layout_width="match_parent"
@@ -35,7 +35,6 @@
         app:mrb_rangeBarColor="#f0f0f0"
         app:mrb_rangeBarPaddingBottom="50dp"
         app:mrb_tickCount="5"
-        app:mrb_drawTicks="true"
         app:mrb_tickEnd="70"
         app:mrb_tickHeight="5dp"
         app:mrb_tickStart="0" />

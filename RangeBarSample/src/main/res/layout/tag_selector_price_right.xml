@@ -10,7 +10,7 @@
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
         android:src="@drawable/tag_selector_price_right" />
 
     <TextView
@@ -20,10 +20,10 @@
         android:layout_alignParentBottom="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
         android:gravity="center"
-        android:text="￥3"
+        android:text="￥300"
         android:textColor="#fd2951"
-        android:textSize="27dp" />
+        android:textSize="17dp" />
 
 </RelativeLayout>
