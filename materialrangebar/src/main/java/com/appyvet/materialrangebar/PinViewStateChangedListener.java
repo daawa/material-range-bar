@@ -11,4 +11,6 @@ public interface PinViewStateChangedListener extends PinView.ValueChanged {
     void onVelocityChanged(float velocity, View view);
 
     void pressStateChanged(boolean isPressed, View view);
+
+    void layoutUpdated(View view);
 }

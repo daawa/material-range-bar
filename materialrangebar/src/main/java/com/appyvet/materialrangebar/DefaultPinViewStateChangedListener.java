@@ -21,4 +21,10 @@ public class DefaultPinViewStateChangedListener implements PinViewStateChangedLi
     public String onValueChanged(float value, View view) {
         return String.valueOf(value);
     }
+
+    @Override
+    public void layoutUpdated(View view) {
+
+    }
+
 }

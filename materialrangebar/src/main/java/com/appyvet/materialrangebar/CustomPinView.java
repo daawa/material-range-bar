@@ -2,9 +2,6 @@ package com.appyvet.materialrangebar;
 
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,16 +48,16 @@ class CustomPinView extends FrameLayout implements PinView {
         firstLayout();
     }
 
-    public void invalidate() {
-        bar.invalidate();
-    }
+//    public void invalidate() {
+//        bar.invalidate();
+//    }
 
     private void firstLayout() {
         layoutCustomView(layoutWidth, widMode, layoutHeight, heightMode);
         width = container.getWidth();
         height = container.getHeight();
-        bar.setPinViewStubRadius(width / 2);
-        pinViewStubRadius = width / 2;
+//        bar.setPinViewStubRadius(width / 2);
+//        pinViewStubRadius = width / 2;
         setTemporaryPinsSizeRatio(1.0f, 1.0f);
 
     }
@@ -72,9 +69,9 @@ class CustomPinView extends FrameLayout implements PinView {
         //int oldWidth = container.getWidth();
         container.measure(View.MeasureSpec.makeMeasureSpec(w, wm), View.MeasureSpec.makeMeasureSpec(h, hm));
         float ap = getAnchor();
-        if(ap < bar.getPaddingLeft()){
+        if (ap < bar.getPaddingLeft()) {
             ap = (bar.getPaddingLeft());
-        } else if(ap > bar.getWidth() - bar.getPaddingRight()){
+        } else if (ap > bar.getWidth() - bar.getPaddingRight()) {
             ap = (bar.getWidth() - bar.getPaddingRight());
         }
 
@@ -104,7 +101,7 @@ class CustomPinView extends FrameLayout implements PinView {
     @Override
     public void release() {
         container.setPressed(false);
-        if(listener != null){
+        if (listener != null) {
             listener.pressStateChanged(isPressed(), container);
         }
 
@@ -129,7 +126,7 @@ class CustomPinView extends FrameLayout implements PinView {
     @Override
     public void press() {
         container.setPressed(true);
-        if(listener != null){
+        if (listener != null) {
             listener.pressStateChanged(isPressed(), container);
         }
 
@@ -170,18 +167,7 @@ class CustomPinView extends FrameLayout implements PinView {
                 left = (int) x - container.getWidth() / 2;
         }
 
-//        if(left < 0){
-//            int l  = container.getLeft();
-//            Log.w("SetX", " left: " + left + " layout.left:" + l );
-//        }
-
-        //customView.setLeft(left);
         container.layout(left, container.getTop(), left + container.getMeasuredWidth(), container.getTop() + container.getMeasuredHeight());
-//        if(left < 0){
-//            int l  = container.getLeft();
-//            Log.w("SetX", " left: " + left + " layouted.left:" + l );
-//        }
-        //container.invalidate();
     }
 
 
@@ -229,8 +215,11 @@ class CustomPinView extends FrameLayout implements PinView {
 
         val = val == null ? String.valueOf(x) : val;
 
-        if (old == null || old.length() != (val == null ? "" : val).length()) {
+        if (old == null || old.length() != (val == null ? "" : val).length()
+                || getRight() > bar.getRight() || getLeft() < bar.getLeft()) {
             updateLayout();
+            if (listener != null)
+                listener.layoutUpdated(container);
         }
 
         this.value = val;

@@ -75,15 +75,19 @@ public class CustomActivity extends Activity {
             String val = formatter.format(String.valueOf(value));
             TextView t = v.findViewById(R.id.text);
             t.setText("￥" + val);
+            t.setTranslationX(0);
+            return val;
+        }
 
+        @Override
+        public void layoutUpdated(View v) {
+            TextView t = v.findViewById(R.id.text);
             if(v.getRight() > rangebar.getRight()){
                 int delta = v.getRight() - rangebar.getRight();
                 t.setTranslationX(-delta);
             } else {
                 t.setTranslationX(0);
             }
-
-            return val;
         }
 
         @Override
@@ -132,6 +136,12 @@ public class CustomActivity extends Activity {
         });
 
         rangebar.setTickConfig(5, 2000, 10);
+//        rangebar.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                rangebar.setRangePinsByValue(5.0f, 2000.f);
+//            }
+//        }, 2000);
 
 
         // Setting Index Values -------------------------------
