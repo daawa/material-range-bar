@@ -105,7 +105,7 @@ class CustomPinView extends FrameLayout implements PinView {
     public void release() {
         container.setPressed(false);
         if(listener != null){
-            listener.pressStateChanged(isPressed(), customView);
+            listener.pressStateChanged(isPressed(), container);
         }
 
         if (mExpandedPinRadius != mExpandedPinRadiusStart) {
@@ -128,9 +128,9 @@ class CustomPinView extends FrameLayout implements PinView {
 
     @Override
     public void press() {
-        customView.setPressed(true);
+        container.setPressed(true);
         if(listener != null){
-            listener.pressStateChanged(isPressed(), customView);
+            listener.pressStateChanged(isPressed(), container);
         }
 
         if (mExpandedPinRadius != mExpandedPinRadiusStart) {
@@ -189,7 +189,7 @@ class CustomPinView extends FrameLayout implements PinView {
     public void setVelocity(float velocity) {
 
         if (listener != null) {
-            listener.onVelocityChanged(velocity, customView);
+            listener.onVelocityChanged(velocity, container);
         }
 
         //customView.findViewById(R.id.icon).setRotation(degree);
@@ -224,7 +224,7 @@ class CustomPinView extends FrameLayout implements PinView {
         String val = null;
 
         if (listener != null) {
-            val = listener.onValueChanged(x, customView);
+            val = listener.onValueChanged(x, container);
         }
 
         val = val == null ? String.valueOf(x) : val;

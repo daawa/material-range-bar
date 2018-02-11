@@ -43,12 +43,13 @@ public class CustomActivity extends Activity {
         }
     };
 
-    PinViewStateChangedListener listener = new DefaultPinViewStateChangedListener() {
+    PinViewStateChangedListener listenerLeft= new DefaultPinViewStateChangedListener() {
         @Override
-        public String onValueChanged(float value, View view) {
+        public String onValueChanged(float value, View v) {
             String val = formatter.format(String.valueOf(value));
-            TextView t = view.findViewById(R.id.text);
+            TextView t = v.findViewById(R.id.text);
             t.setText("￥" + val);
+
             return val;
         }
 
@@ -63,15 +64,39 @@ public class CustomActivity extends Activity {
             if(!isPressed){
                 SpringAnimation animation = new SpringAnimation(view.findViewById(R.id.icon), DynamicAnimation.ROTATION, 0);
                 animation.getSpring().setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY).setStiffness(SpringForce.STIFFNESS_LOW);
-//                animation.addUpdateListener(new DynamicAnimation.OnAnimationUpdateListener() {
-//                    @Override
-//                    public void onAnimationUpdate(DynamicAnimation animation, float value, float velocity) {
-//                        Log.w("Spring", "value:" + value + " velocity:" + velocity);
-//                        float rot = view.findViewById(R.id.icon).getRotation();
-//                        Log.w("Spring"," view rot:" + rot);
-//                        //rangebar.invalidate();
-//                    }
-//                });
+                animation.start();
+            }
+        }
+    };
+
+    PinViewStateChangedListener listenerRight = new DefaultPinViewStateChangedListener() {
+        @Override
+        public String onValueChanged(float value, View v) {
+            String val = formatter.format(String.valueOf(value));
+            TextView t = v.findViewById(R.id.text);
+            t.setText("￥" + val);
+
+            if(v.getRight() > rangebar.getRight()){
+                int delta = v.getRight() - rangebar.getRight();
+                t.setTranslationX(-delta);
+            } else {
+                t.setTranslationX(0);
+            }
+
+            return val;
+        }
+
+        @Override
+        public void onVelocityChanged(float velocity, View view) {
+            float degree = velocity / RangeBar.MAX_VELOCITY * DEGREE;
+            view.findViewById(R.id.icon).setRotation(degree);
+        }
+
+        @Override
+        public void pressStateChanged(boolean isPressed, final View view) {
+            if(!isPressed){
+                SpringAnimation animation = new SpringAnimation(view.findViewById(R.id.icon), DynamicAnimation.ROTATION, 0);
+                animation.getSpring().setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY).setStiffness(SpringForce.STIFFNESS_LOW);
                 animation.start();
             }
         }
@@ -92,8 +117,8 @@ public class CustomActivity extends Activity {
         final int right = R.layout.tag_selector_price_right;
 
         rangebar.setCustomSelector(
-                left, RangeBar.ANCHOR_RIGHT, listener,
-                right, RangeBar.ANCHOR_LEFT, listener);
+                left, RangeBar.ANCHOR_RIGHT, listenerLeft,
+                right, RangeBar.ANCHOR_LEFT, listenerRight);
 
         rangebar.setPinTextFormatter(new RangeBar.PinTextFormatter() {
             @Override
