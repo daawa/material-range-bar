@@ -3,6 +3,8 @@
     android:layout_width="wrap_content"
     android:layout_height="100dp"
     android:padding="1dp"
+    android:clipToPadding="false"
+    android:clipChildren="false"
     android:gravity="center_horizontal">
 
     <ImageView

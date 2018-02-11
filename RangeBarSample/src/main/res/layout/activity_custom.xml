@@ -28,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         app:mrb_barWeight="2dp"
+        app:mrb_drawTicks="false"
         app:mrb_connectingLineColorEnd="#fd2951"
         app:mrb_connectingLineColorStart="#ffc0cc"
         app:mrb_connectingLineWeight="4dp"

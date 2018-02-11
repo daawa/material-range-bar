@@ -141,7 +141,7 @@ public class Bar {
      */
     public int getNearestTickIndex(PinView thumb) {
 
-        return (int) ((thumb.getX() - mLeftX + mTickDistance / 2f) / mTickDistance);
+        return (int) ((thumb.getAnchor() - mLeftX + mTickDistance / 2f) / mTickDistance);
     }
 
 

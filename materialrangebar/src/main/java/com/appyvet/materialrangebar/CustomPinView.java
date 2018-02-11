@@ -18,7 +18,7 @@ import static com.appyvet.materialrangebar.RangeBar.ANCHOR_RIGHT;
  * Created by zhangzhenwei on 2018/1/19.
  */
 
-class CustomPinView implements PinView {
+class CustomPinView extends FrameLayout implements PinView {
     protected PinViewStateChangedListener listener;
 
     private FrameLayout container;
@@ -37,7 +37,8 @@ class CustomPinView implements PinView {
     int width, height;
 
     public CustomPinView(int layoutId, int anchor, PinViewStateChangedListener listener, RangeBar rangeBar) {
-        this.container = new FrameLayout(rangeBar.getContext());
+        super(rangeBar.getContext());
+        this.container = this;
         this.container.setClipChildren(false);
         this.container.setClipToPadding(false);
 
@@ -46,7 +47,7 @@ class CustomPinView implements PinView {
         this.bar = rangeBar;
         this.customView = LayoutInflater.from(bar.getContext()).inflate(layoutId, this.container, false);
         this.container.addView(customView);
-        this.container.setBackgroundColor(Color.YELLOW);
+        //this.container.setBackgroundColor(Color.YELLOW);
         firstLayout();
     }
 
@@ -68,15 +69,22 @@ class CustomPinView implements PinView {
         if (w == container.getWidth() && h == container.getHeight()) {
             return;
         }
-        int oldWidth = container.getWidth();
+        //int oldWidth = container.getWidth();
         container.measure(View.MeasureSpec.makeMeasureSpec(w, wm), View.MeasureSpec.makeMeasureSpec(h, hm));
-        int left = container.getLeft() > 0 ? container.getLeft() : bar.getPaddingLeft();
-        left -= (container.getMeasuredWidth() - oldWidth) / 2;
-        int top = (bar.getHeight() - container.getMeasuredHeight()) / 2;
-        this.container.layout(left, top, left + container.getMeasuredWidth(), top + container.getMeasuredHeight());
+        float ap = getAnchor();
+        if(ap < bar.getPaddingLeft()){
+            ap = (bar.getPaddingLeft());
+        } else if(ap > bar.getWidth() - bar.getPaddingRight()){
+            ap = (bar.getWidth() - bar.getPaddingRight());
+        }
 
-        //Log.w("layout", "wid: " + container.getWidth() + "measured wid:" + container.getMeasuredWidth() + " anchor:" + anchor);
-        invalidate();
+        setAnchor(ap);
+
+//        int left = container.getLeft() ;
+//        left -= (container.getMeasuredWidth() - oldWidth) / 2;
+//        int top = (bar.getHeight() - container.getMeasuredHeight()) / 2;
+//        this.container.layout(left, top, left + container.getMeasuredWidth(), top + container.getMeasuredHeight());
+
     }
 
     @Override
@@ -148,7 +156,7 @@ class CustomPinView implements PinView {
     }
 
     @Override
-    public void setX(float x) {
+    public void setAnchor(float x) {
 
         int left;
         switch (anchor) {
@@ -161,9 +169,19 @@ class CustomPinView implements PinView {
             default: //ANCHOR_CENTER
                 left = (int) x - container.getWidth() / 2;
         }
+
+//        if(left < 0){
+//            int l  = container.getLeft();
+//            Log.w("SetX", " left: " + left + " layout.left:" + l );
+//        }
+
         //customView.setLeft(left);
         container.layout(left, container.getTop(), left + container.getMeasuredWidth(), container.getTop() + container.getMeasuredHeight());
-        container.invalidate();
+//        if(left < 0){
+//            int l  = container.getLeft();
+//            Log.w("SetX", " left: " + left + " layouted.left:" + l );
+//        }
+        //container.invalidate();
     }
 
 
@@ -179,7 +197,7 @@ class CustomPinView implements PinView {
 
 
     @Override
-    public float getX() {
+    public float getAnchor() {
 
         float x;
         int left = container.getLeft();
@@ -231,13 +249,15 @@ class CustomPinView implements PinView {
 
     @Override
     public boolean isInTargetZone(float x, float y) {
-        boolean res = (Math.abs(x - container.getX()) <= container.getMeasuredWidth()
-                && Math.abs(y - container.getY()) <= container.getMeasuredHeight());
+        boolean res = (x >= container.getLeft()) && x <= container.getRight();
         return res;
     }
 
     @Override
     public void draw(Canvas canvas) {
+//        int left = container.getLeft();
+//        Log.w("Draw", "left:" + left);
+
         canvas.save();
         canvas.translate(container.getLeft(), container.getTop());
 //        float de = customView.getRotation();
@@ -245,7 +265,7 @@ class CustomPinView implements PinView {
 //        //matrix.postRotate(de);
 //        matrix.preRotate(de);
 //        canvas.concat(matrix);
-        container.draw(canvas);
+        super.draw(canvas);
         canvas.restore();
     }
 

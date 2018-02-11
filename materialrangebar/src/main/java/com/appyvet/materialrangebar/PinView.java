@@ -11,8 +11,8 @@ import android.view.View;
 
 public interface PinView {
 
-    float getX();
-    void setX(float x);
+    float getAnchor();
+    void setAnchor(float x);
     void setVelocity(float velocity);
     boolean isPressed();
     void draw(Canvas canvas);

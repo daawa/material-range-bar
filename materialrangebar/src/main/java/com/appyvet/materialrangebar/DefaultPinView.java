@@ -202,7 +202,7 @@ class DefaultPinView extends View implements PinView{
      * @param x set x value of the pin
      */
     @Override
-    public void setX(float x) {
+    public void setAnchor(float x) {
         mX = x;
     }
 
@@ -213,7 +213,7 @@ class DefaultPinView extends View implements PinView{
      * @return x float value of the pin
      */
     @Override
-    public float getX() {
+    public float getAnchor() {
         return mX;
     }
 
