@@ -1,6 +1,7 @@
 package com.appyvet.materialrangebar;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Point;
 import android.view.View;
 
@@ -8,50 +9,35 @@ import android.view.View;
  * Created by zhangzhenwei on 2018/1/19.
  */
 
-public abstract class PinView extends View {
-    protected ValueChanged listener;
+public interface PinView {
 
-    public PinView(Context context) {
-        super(context);
-    }
+    float getX();
+    void setX(float x);
+    void setVelocity(float velocity);
+    boolean isPressed();
+    void draw(Canvas canvas);
 
-
-    public abstract void setFormatter(com.appyvet.materialrangebar.IRangeBarFormatter mFormatter);
 
     /**
      * Release the pin, sets pressed state to false
      */
-    public abstract void release();
+    void release();
 
     /**
      * Sets the state of the pin to pressed
      */
-    public abstract void press();
+    void press();
 
     /**
      * Set the value of the pin
      *
      * @param x String value of the pin
      */
-    public final void setPinValue(float x){
-        String old = getValue();
+    void setPinValue(float x) ;
 
-        String val = null;
-        if(listener != null){
-            val = listener.onValueChanged(x);
-        }
-        val = val == null? String.valueOf(x): val;
+     String getValue();
 
-        setValue(val);
-        if(old == null || old.length() != (getValue() == null? "" : getValue()).length()){
-            updateLayout();
-        }
-    }
-
-    public abstract void setValue(String val);
-    public abstract String getValue();
-
-    public abstract void updateLayout();
+     void updateLayout();
 
     /**
      * Determines if the input coordinate is close enough to this thumb to
@@ -62,9 +48,11 @@ public abstract class PinView extends View {
      * @return true if the coordinates are within this thumb's target area;
      * false otherwise
      */
-    public abstract boolean isInTargetZone(float x, float y);
+     boolean isInTargetZone(float x, float y);
 
-    public interface ValueChanged{
-        String onValueChanged(float value);
+    void setFormatter(com.appyvet.materialrangebar.IRangeBarFormatter mFormatter);
+
+    interface ValueChanged {
+        String onValueChanged(float value, View view);
     }
 }

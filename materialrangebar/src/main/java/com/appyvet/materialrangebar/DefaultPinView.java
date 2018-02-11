@@ -24,14 +24,14 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
-
+import android.view.View;
 
 
 /**
  * Represents a thumb in the RangeBar slider. This is the handle for the slider
  * that is pressed and slid.
  */
-class DefaultPinView extends PinView {
+class DefaultPinView extends View implements PinView{
 
     // Private Constants ///////////////////////////////////////////////////////
 
@@ -223,8 +223,9 @@ class DefaultPinView extends PinView {
      *
      * @param x String value of the pin
      */
-    public void setValue(String x) {
-        mValue = x;
+    @Override
+    public void setPinValue(float x) {
+        mValue = String.valueOf(x);
     }
 
     /**
@@ -245,6 +246,11 @@ class DefaultPinView extends PinView {
 
     @Override
     public void updateLayout() {
+
+    }
+
+    @Override
+    public void setVelocity(float velocity) {
 
     }
 

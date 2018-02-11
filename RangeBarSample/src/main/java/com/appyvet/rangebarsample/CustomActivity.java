@@ -3,6 +3,10 @@ package com.appyvet.rangebarsample;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.animation.DynamicAnimation;
+import android.support.animation.SpringAnimation;
+import android.support.animation.SpringForce;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,8 +19,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appyvet.materialrangebar.DefaultPinViewStateChangedListener;
 import com.appyvet.materialrangebar.IRangeBarFormatter;
 import com.appyvet.materialrangebar.PinView;
+import com.appyvet.materialrangebar.PinViewStateChangedListener;
 import com.appyvet.materialrangebar.RangeBar;
 
 /**
@@ -25,6 +31,8 @@ import com.appyvet.materialrangebar.RangeBar;
 
 
 public class CustomActivity extends Activity {
+    final float DEGREE = 45;
+    final float MAX_VELOCIYT = 2000;
 
     // Sets the initial values such that the image will be drawn
     private static final int INDIGO_500 = 0xff3f51b5;
@@ -66,6 +74,43 @@ public class CustomActivity extends Activity {
         bundle.putInt("CONNECTING_LINE_COLOR", mConnectingLineColor);
     }
 
+    PinViewStateChangedListener listener = new DefaultPinViewStateChangedListener() {
+        float velocity;
+        @Override
+        public String onValueChanged(float value, View view) {
+            String val = formatter.format(String.valueOf(value));
+            TextView t = view.findViewById(R.id.text);
+            t.setText("$" + val);
+            return val;
+        }
+
+        @Override
+        public void onVelocityChanged(float velocity, View view) {
+            float degree = velocity / MAX_VELOCIYT * DEGREE;
+            view.findViewById(R.id.icon).setRotation(degree);
+            this.velocity = velocity;
+        }
+
+        @Override
+        public void pressStateChanged(boolean isPressed, final View view) {
+            if(!isPressed){
+                //view.findViewById(R.id.icon).setRotation(0);
+                SpringAnimation animation = new SpringAnimation(view.findViewById(R.id.icon), DynamicAnimation.ROTATION, 0);
+                animation.getSpring().setDampingRatio(SpringForce.DAMPING_RATIO_HIGH_BOUNCY).setStiffness(SpringForce.STIFFNESS_VERY_LOW);
+                animation.addUpdateListener(new DynamicAnimation.OnAnimationUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(DynamicAnimation animation, float value, float velocity) {
+                        Log.w("Spring", "value:" + value + " velocity:" + velocity);
+                        float rot = view.findViewById(R.id.icon).getRotation();
+                        Log.w("Spring"," view rot:" + rot);
+                        rangebar.invalidate();
+                    }
+                });
+                animation.start();
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,33 +127,16 @@ public class CustomActivity extends Activity {
 
         rangebar = findViewById(R.id.rangebar1);
 
-        ViewGroup group = new FrameLayout(this);
+        //ViewGroup group = new FrameLayout(this);
 
-        final View left = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_left, group, false);
-        final View right = LayoutInflater.from(this).inflate(R.layout.tag_selector_price_right, group, false);
+        final int left = R.layout.tag_selector_price_left;
+        final int right = R.layout.tag_selector_price_right;
 
-//        right.setBackgroundColor(Color.CYAN);
+//        right.setBackgroundColor(Color.CYAN:i);
 //        left.setBackgroundColor(Color.parseColor("#a0aa0000"));
         rangebar.setCustomSelector(
-                left, RangeBar.ANCHOR_RIGHT, new PinView.ValueChanged() {
-                    @Override
-                    public String onValueChanged(float value) {
-                        String val = formatter.format(String.valueOf(value));
-                        TextView t = left.findViewById(R.id.text);
-                        t.setText("#" + val);
-                        return val;
-
-                    }
-                },
-                right, RangeBar.ANCHOR_LEFT, new PinView.ValueChanged() {
-                    @Override
-                    public String onValueChanged(float value) {
-                        String val = formatter.format(String.valueOf(value));
-                        TextView t = right.findViewById(R.id.text);
-                        t.setText("$" + val);
-                        return val;
-                    }
-                });
+                left, RangeBar.ANCHOR_RIGHT, listener,
+                right, RangeBar.ANCHOR_LEFT, listener);
 
         rangebar.setPinTextFormatter(new RangeBar.PinTextFormatter() {
             @Override
@@ -122,6 +150,7 @@ public class CustomActivity extends Activity {
         });
 
         rangebar.setTickConfig(5, 2000, 10);
+        //rangebar.setDrawTicks(true);
         //rangebar.setTemporaryPinsSizeRatio(1.5f);
         //rangebar.setTemporaryPins(false);
 
@@ -162,7 +191,7 @@ public class CustomActivity extends Activity {
             }
         });
 
-        rangebar.setDrawTicks(true);
+
 
 
         indexButton.setOnClickListener(new View.OnClickListener() {

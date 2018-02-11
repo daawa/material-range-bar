@@ -13,12 +13,11 @@
         android:layout_height="24dp"
         android:layout_alignRight="@id/icon"
         android:gravity="center"
-        android:text="￥30"
+        android:text="￥3000"
         android:textColor="#fd2951"
         android:textSize="17dp" />
 
     <ImageView
-        android:layout_above="@+id/text"
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -38,6 +38,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 
 /**
@@ -151,6 +152,8 @@ public class RangeBar extends View {
 
     private Bar mBar;
 
+    private VelocityTracker velocityTracker;
+
     private ConnectingLine mConnectingLine;
 
     private OnRangeBarChangeListener mListener;
@@ -205,12 +208,12 @@ public class RangeBar extends View {
     // Constructors ////////////////////////////////////////////////////////////
 
     public RangeBar(Context context) {
-        super(context);
+        this(context,null);
+
     }
 
     public RangeBar(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        rangeBarInit(context, attrs);
+        this(context, attrs, 0);
     }
 
     public RangeBar(Context context, AttributeSet attrs, int defStyle) {
@@ -373,6 +376,8 @@ public class RangeBar extends View {
             return false;
         }
 
+        velocityTracker.addMovement(event);
+
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
@@ -387,11 +392,13 @@ public class RangeBar extends View {
             case MotionEvent.ACTION_UP:
                 this.getParent().requestDisallowInterceptTouchEvent(false);
                 onActionUp(event.getX(), event.getY());
+                velocityTracker.clear();
                 return true;
 
             case MotionEvent.ACTION_CANCEL:
                 this.getParent().requestDisallowInterceptTouchEvent(false);
                 onActionUp(event.getX(), event.getY());
+                velocityTracker.clear();
                 return true;
 
             case MotionEvent.ACTION_MOVE:
@@ -904,6 +911,14 @@ public class RangeBar extends View {
             mTickMap = new SparseArray<>();
         }
 
+        if(velocityTracker == null){
+            velocityTracker = VelocityTracker.obtain();
+        } else {
+            velocityTracker.clear();
+        }
+
+        if(attrs == null) return;
+
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.RangeBar, 0, 0);
 
         try {
@@ -1018,7 +1033,7 @@ public class RangeBar extends View {
         float yPos = getYPos();
 
         if (mIsRangeBar) {
-            if (customLeftThumb != null) {
+            if (customLeftThumb > 0) {
                 //removeView(mLeftThumb);
                 mLeftThumb = new CustomPinView(customLeftThumb, leftAnchor, leftValListener, this);
                 //addView(mLeftThumb);
@@ -1028,7 +1043,7 @@ public class RangeBar extends View {
             }
         }
 
-        if (customRightThumb != null) {
+        if (customRightThumb > 0) {
             //removeView(mRightThumb);
             mRightThumb = new CustomPinView(customRightThumb, rightAnchor, rightValListener, this);
             //addView(mRightThumb);
@@ -1235,11 +1250,12 @@ public class RangeBar extends View {
             }
         }
 
-        // Move the pressed thumb to the new x-position.
+        velocityTracker.computeCurrentVelocity(1000, 1000.f);
+        float vel = velocityTracker.getXVelocity();
         if (mIsRangeBar && leftPin.isPressed()) {
-            movePin(leftPin, x);
+            movePin(leftPin, x, vel);
         } else if (rightPin.isPressed()) {
-            movePin(rightPin, x);
+            movePin(rightPin, x, vel);
         }
 
         int newLeftPos = mIsRangeBar ? (int) mLeftThumb.getX() : getMarginLeft();
@@ -1322,12 +1338,14 @@ public class RangeBar extends View {
      *
      * @param thumb the thumb to move
      * @param x     the x-coordinate to move the thumb to
+     * @param velocity the current moving velocity
      */
-    private void movePin(PinView thumb, float x) {
+    private void movePin(PinView thumb, float x, float velocity) {
         if (thumb == null) {
             return;
         }
-
+        //Log.w("Moving", "velocity:" + velocity);
+        thumb.setVelocity(velocity);
         if (x < mBar.getLeftX()) {
             thumb.setX(mBar.getLeftX());
         } else if (x > mBar.getRightX()) {
@@ -1366,26 +1384,26 @@ public class RangeBar extends View {
     }
 
 
-    View customLeftThumb, customRightThumb;
-    PinView.ValueChanged leftValListener, rightValListener;
+    int customLeftThumb, customRightThumb;
+    PinViewStateChangedListener leftValListener, rightValListener;
     int leftAnchor, rightAnchor;
 
     /**
      * set custom selectors
      *
-     * @param left  the left selector view; if not range bar , just set it null
-     * @param right the right selector view
+     * @param leftLayoutId  the left selector view; if not range bar , just set it null
+     * @param rightLayoutId the right selector view
      */
-    public void setCustomSelector(@Nullable View left, @Nullable PinView.ValueChanged leftValListener, @Nullable View right, @Nullable PinView.ValueChanged rightValListener) {
-        setCustomSelector(left, ANCHOR_CENTER, leftValListener, right, ANCHOR_CENTER, rightValListener);
+    public void setCustomSelector(int leftLayoutId, @Nullable PinViewStateChangedListener leftValListener, int rightLayoutId, @Nullable PinViewStateChangedListener rightValListener) {
+        setCustomSelector(leftLayoutId, ANCHOR_CENTER, leftValListener, rightLayoutId, ANCHOR_CENTER, rightValListener);
     }
 
 
-    public void setCustomSelector(@Nullable View left, int leftAnchor, @Nullable PinView.ValueChanged leftValListener, @Nullable View right, int rightAnchor, @Nullable PinView.ValueChanged rightValListener) {
-        customLeftThumb = left;
+    public void setCustomSelector( int leftLayoutId, int leftAnchor, @Nullable PinViewStateChangedListener leftValListener, int rightLayoutId, int rightAnchor, @Nullable PinViewStateChangedListener rightValListener) {
+        customLeftThumb = leftLayoutId;
         this.leftValListener = leftValListener;
         this.leftAnchor = leftAnchor;
-        customRightThumb = right;
+        customRightThumb = rightLayoutId;
         this.rightValListener = rightValListener;
         this.rightAnchor = rightAnchor;
 
