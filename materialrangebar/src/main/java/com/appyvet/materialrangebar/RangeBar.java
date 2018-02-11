@@ -1202,7 +1202,9 @@ public class RangeBar extends ViewGroup {
 
                 pressPin(mRightThumb);
             }
+
         } else {
+
             if (mRightThumb.isInTargetZone(x, y)) {
                 pressPin(mRightThumb);
             }
@@ -1222,6 +1224,10 @@ public class RangeBar extends ViewGroup {
         } else if (mRightThumb.isPressed()) {
             releasePin(mRightThumb);
         } else {
+            return;
+        }
+
+        /*else {
 
             float leftThumbXDistance = mIsRangeBar ? Math.abs(mLeftThumb.getAnchor() - x) : 0;
             float rightThumbXDistance = Math.abs(mRightThumb.getAnchor() - x);
@@ -1236,7 +1242,7 @@ public class RangeBar extends ViewGroup {
                 releasePin(mRightThumb);
             }
 
-        }
+        }*/
 
         mLeftPos = (int) mLeftThumb.getAnchor();
         mRightPos = (int) mRightThumb.getAnchor();
@@ -1302,6 +1308,7 @@ public class RangeBar extends ViewGroup {
             mRightPos = newRightPos;
 
             if (mIsRangeBar) {
+
                 leftPin.setPinValue(getLeftPinValue());
             }
             rightPin.setPinValue(getRightPinValue());

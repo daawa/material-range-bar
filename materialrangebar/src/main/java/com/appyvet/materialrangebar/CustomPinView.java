@@ -31,7 +31,7 @@ class CustomPinView extends FrameLayout implements PinView {
 
     RangeBar bar;
 
-    int width, height;
+    //int width, height;
 
     public CustomPinView(int layoutId, int anchor, PinViewStateChangedListener listener, RangeBar rangeBar) {
         super(rangeBar.getContext());
@@ -54,16 +54,16 @@ class CustomPinView extends FrameLayout implements PinView {
 
     private void firstLayout() {
         layoutCustomView(layoutWidth, widMode, layoutHeight, heightMode);
-        width = container.getWidth();
-        height = container.getHeight();
+//        width = container.getWidth();
+//        height = container.getHeight();
 //        bar.setPinViewStubRadius(width / 2);
 //        pinViewStubRadius = width / 2;
-        setTemporaryPinsSizeRatio(1.0f, 1.0f);
+        //setTemporaryPinsSizeRatio(1.0f, 1.0f);
 
     }
 
     private void layoutCustomView(int w, int wm, int h, int hm) {
-        if (w == container.getWidth() && h == container.getHeight()) {
+        if (w == container.getMeasuredWidth() && h == container.getMeasuredHeight()) {
             return;
         }
         //int oldWidth = container.getWidth();
@@ -77,11 +77,36 @@ class CustomPinView extends FrameLayout implements PinView {
 
         setAnchor(ap);
 
-//        int left = container.getLeft() ;
-//        left -= (container.getMeasuredWidth() - oldWidth) / 2;
-//        int top = (bar.getHeight() - container.getMeasuredHeight()) / 2;
-//        this.container.layout(left, top, left + container.getMeasuredWidth(), top + container.getMeasuredHeight());
+    }
 
+    private void doLayout(int anchorX){
+        /**
+         * !! getWidth() is different from getMeasuredWidth() after measure(..) and before layout(..)
+         */
+
+        int left;
+        switch (anchor) {
+            case ANCHOR_RIGHT:
+                left =  anchorX - container.getMeasuredWidth();
+                break;
+            case ANCHOR_LEFT:
+                left =  anchorX;
+                break;
+            default: //ANCHOR_CENTER
+                left =  anchorX - container.getMeasuredWidth() / 2;
+        }
+
+
+//        int oldW = container.getWidth();
+//        int oldM = container.getMeasuredWidth();
+
+        container.layout(left, container.getTop(), left + container.getMeasuredWidth(), container.getTop() + container.getMeasuredHeight());
+
+//        if(anchor == ANCHOR_RIGHT && container.getRight() < 53){
+//            int rig = container.getRight();
+//
+//            rig++;
+//        }
     }
 
     @Override
@@ -95,7 +120,7 @@ class CustomPinView extends FrameLayout implements PinView {
     }
 
     private void setPinZoom(float zoom) {
-        layoutCustomView((int) (width * zoom), View.MeasureSpec.EXACTLY, (int) (height * zoom), View.MeasureSpec.EXACTLY);
+//        layoutCustomView((int) (width * zoom), View.MeasureSpec.EXACTLY, (int) (height * zoom), View.MeasureSpec.EXACTLY);
     }
 
     @Override
@@ -154,20 +179,7 @@ class CustomPinView extends FrameLayout implements PinView {
 
     @Override
     public void setAnchor(float x) {
-
-        int left;
-        switch (anchor) {
-            case ANCHOR_RIGHT:
-                left = (int) x - container.getWidth();
-                break;
-            case ANCHOR_LEFT:
-                left = (int) x;
-                break;
-            default: //ANCHOR_CENTER
-                left = (int) x - container.getWidth() / 2;
-        }
-
-        container.layout(left, container.getTop(), left + container.getMeasuredWidth(), container.getTop() + container.getMeasuredHeight());
+        doLayout((int)x);
     }
 
 
@@ -195,7 +207,7 @@ class CustomPinView extends FrameLayout implements PinView {
                 x = left;
                 break;
             default: //ANCHOR_CENTER
-                x = left + container.getWidth() / 2;
+                x = left + container.getMeasuredWidth() / 2;
         }
 
         return x;

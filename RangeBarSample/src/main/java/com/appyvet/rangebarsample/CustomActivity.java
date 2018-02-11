@@ -54,6 +54,17 @@ public class CustomActivity extends Activity {
         }
 
         @Override
+        public void layoutUpdated(View v) {
+            TextView t = v.findViewById(R.id.text);
+            if(v.getLeft() < rangebar.getLeft()){
+                int delta = rangebar.getLeft() - v.getLeft();
+                t.setTranslationX(delta);
+            } else {
+                t.setTranslationX(0);
+            }
+        }
+
+        @Override
         public void onVelocityChanged(float velocity, View view) {
             float degree = velocity / RangeBar.MAX_VELOCITY * DEGREE;
             view.findViewById(R.id.icon).setRotation(degree);
