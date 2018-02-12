@@ -1201,6 +1201,20 @@ public class RangeBar extends ViewGroup {
             } else if (!mLeftThumb.isPressed() && mRightThumb.isInTargetZone(x, y)) {
 
                 pressPin(mRightThumb);
+            } else {
+                if(mLeftThumb.isPressed()){
+                    mLeftThumb.release();
+                }
+                if(mRightThumb.isPressed()){
+                    mRightThumb.release();
+                }
+
+                if(Math.abs(x - mLeftThumb.getAnchor()) < Math.abs(x - mRightThumb.getAnchor())){
+                    pressPin(mLeftThumb);
+                } else {
+                    pressPin(mRightThumb);
+                }
+
             }
 
         } else {
