@@ -38,7 +38,9 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * The MaterialRangeBar is a single or double-sided version of a {@link android.widget.SeekBar}
@@ -53,8 +55,9 @@ import android.view.View;
  * have
  * been moved.
  */
-public class RangeBar extends View {
 
+public class RangeBar extends ViewGroup {
+    public static final float MAX_VELOCITY = 1200.f;
     public static final int ANCHOR_CENTER = 0x01;
     public static final int ANCHOR_LEFT = ANCHOR_CENTER << 1;
     public static final int ANCHOR_RIGHT = ANCHOR_CENTER << 2;
@@ -151,6 +154,8 @@ public class RangeBar extends View {
 
     private Bar mBar;
 
+    private VelocityTracker velocityTracker;
+
     private ConnectingLine mConnectingLine;
 
     private OnRangeBarChangeListener mListener;
@@ -205,12 +210,12 @@ public class RangeBar extends View {
     // Constructors ////////////////////////////////////////////////////////////
 
     public RangeBar(Context context) {
-        super(context);
+        this(context, null);
+
     }
 
     public RangeBar(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        rangeBarInit(context, attrs);
+        this(context, attrs, 0);
     }
 
     public RangeBar(Context context, AttributeSet attrs, int defStyle) {
@@ -324,14 +329,16 @@ public class RangeBar extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        if (w <= 0) return;
+
         final Context ctx = getContext();
         final int barYPos = getYPos();
 
         if (mLeftPos <= 0) {
-            mLeftPos = getMarginLeft();
+            mLeftPos = getPaddingLeft();
         }
-        if (mRightPos <= 0) {
-            mRightPos = getMarginLeft() + getBarLength();
+        if (mRightPos <= 0 || mRightPos > getPaddingLeft() + getBarLength()) {
+            mRightPos = getPaddingLeft() + getBarLength();
         }
 
         createBar();
@@ -356,7 +363,7 @@ public class RangeBar extends View {
             }
             mLeftThumb.draw(canvas);
         } else {
-            mConnectingLine.draw(canvas, getMarginLeft(), mRightThumb);
+            mConnectingLine.draw(canvas, getPaddingLeft(), mRightThumb);
             if (drawTicks) {
                 mBar.drawTicks(canvas);
             }
@@ -373,6 +380,8 @@ public class RangeBar extends View {
             return false;
         }
 
+        velocityTracker.addMovement(event);
+
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
@@ -387,11 +396,13 @@ public class RangeBar extends View {
             case MotionEvent.ACTION_UP:
                 this.getParent().requestDisallowInterceptTouchEvent(false);
                 onActionUp(event.getX(), event.getY());
+                velocityTracker.clear();
                 return true;
 
             case MotionEvent.ACTION_CANCEL:
                 this.getParent().requestDisallowInterceptTouchEvent(false);
                 onActionUp(event.getX(), event.getY());
+                velocityTracker.clear();
                 return true;
 
             case MotionEvent.ACTION_MOVE:
@@ -471,11 +482,14 @@ public class RangeBar extends View {
             mTickStart = start;
             mTickEnd = end;
             mTickMap.clear();
-            createBar();
-            createPins();
         } else {
             Log.e(TAG, "tickCount less than 2; invalid tickCount.");
             throw new IllegalArgumentException("tickCount less than 2; invalid tickCount.");
+        }
+
+        if (getWidth() > 0) {
+            createBar();
+            createPins();
         }
     }
 
@@ -671,13 +685,13 @@ public class RangeBar extends View {
         int pos = (int) ((tickIndex * 1.0f) / (mTickCount - 1) * len);
         if (pos > len) pos = len;
 
-        return pos + getMarginLeft();
+        return pos + getPaddingLeft();
     }
 
     //todo: optimize
     private int findTick4Pos(float pos) {
         int len = getBarLength();
-        pos -= getMarginLeft();
+        pos -= getPaddingLeft();
         int seg = mTickCount - 1;
         for (int i = 0; i < mTickCount; i++) {
             float lt = i * 1.f / seg * len;
@@ -744,11 +758,11 @@ public class RangeBar extends View {
 
             adjustPin();
         }
-        invalidate();
-        requestLayout();
+
     }
 
     private void adjustPin() {
+        if(mRightThumb == null) return;
         float left = mLeftPos, right = mRightPos;
         if (drawTicks) {
             left = findTick4Pos(mLeftPos);
@@ -757,7 +771,14 @@ public class RangeBar extends View {
             mRightPos = findTick4Pos((int) right);
         }
 
-        createPins();
+        //createPins();
+        if (isRangeBar()) {
+            mLeftThumb.setAnchor(mLeftPos);
+            mLeftThumb.setPinValue(getLeftPinValue());
+        }
+
+        mRightThumb.setAnchor(mRightPos);
+        mRightThumb.setPinValue(getRightPinValue());
 
         if (mListener != null) {
             mListener.onRangeChangeListener(this, drawTicks,
@@ -770,7 +791,7 @@ public class RangeBar extends View {
     private float getPosition4Val(float val) {
         if (val < mTickStart) val = mTickStart;
 
-        float pos = ((val - mTickStart) / (mTickEnd - mTickStart) * getBarLength()) + getMarginLeft();
+        float pos = ((val - mTickStart) / (mTickEnd - mTickStart) * getBarLength()) + getPaddingLeft();
 
         if (drawTicks) {
             int tick = findTick4Pos(pos);
@@ -900,9 +921,21 @@ public class RangeBar extends View {
      */
     private void rangeBarInit(Context context, AttributeSet attrs) {
 
+        setWillNotDraw(false);
+        setClipChildren(false);
+        setClipToPadding(false);
+
         if (mTickMap == null) {
             mTickMap = new SparseArray<>();
         }
+
+        if (velocityTracker == null) {
+            velocityTracker = VelocityTracker.obtain();
+        } else {
+            velocityTracker.clear();
+        }
+
+        if (attrs == null) return;
 
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.RangeBar, 0, 0);
 
@@ -915,15 +948,15 @@ public class RangeBar extends View {
                 mTickCount = tickCount;
                 mTickStart = tickStart;
                 mTickEnd = tickEnd;
-                mLeftPos = getMarginLeft();
-                mRightPos = getMarginRight() + getBarLength();
+                mLeftPos = getPaddingLeft();
+                mRightPos = getPaddingLeft() + getBarLength();
 
-                float left = drawTicks ? 0 : mLeftPos;
-                float right = drawTicks ? mTickCount - 1 : mRightPos;
-                if (mListener != null) {
-                    mListener.onRangeChangeListener(this, drawTicks,
-                            (int) left, (int) right, tickStart, tickEnd);
-                }
+//                float left = drawTicks ? 0 : mLeftPos;
+//                float right = drawTicks ? mTickCount - 1 : mRightPos;
+//                if (mListener != null) {
+//                    mListener.onRangeChangeListener(this, drawTicks,
+//                            (int) left, (int) right, tickStart, tickEnd);
+//                }
 
             } else {
 
@@ -990,7 +1023,7 @@ public class RangeBar extends View {
      */
     private void createBar() {
         mBar = new Bar(getContext(),
-                getMarginLeft(),
+                getPaddingLeft(),
                 getYPos(),
                 getBarLength(),
                 mTickCount,
@@ -1013,25 +1046,41 @@ public class RangeBar extends View {
     }
 
 
+    private void removeView(PinView view) {
+        if (view != null && view instanceof View) {
+            View v = (View) view;
+            if (v.getParent() != null) {
+                ((ViewGroup) v.getParent()).removeView(v);
+            }
+        }
+    }
+
+    private void addView(PinView view) {
+        if (view != null && view instanceof View) {
+            View v = (View) view;
+            addView(v);
+        }
+    }
+
     private void createPins() {
         Context ctx = getContext();
         float yPos = getYPos();
 
         if (mIsRangeBar) {
-            if (customLeftThumb != null) {
-                //removeView(mLeftThumb);
+            if (customLeftThumb > 0) {
+                removeView(mLeftThumb);
                 mLeftThumb = new CustomPinView(customLeftThumb, leftAnchor, leftValListener, this);
-                //addView(mLeftThumb);
+                addView(mLeftThumb);
             } else {
                 mLeftThumb = new DefaultPinView(ctx);
                 ((DefaultPinView) mLeftThumb).init(this, yPos, mPinColor, mTextColor, defaultCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
             }
         }
 
-        if (customRightThumb != null) {
-            //removeView(mRightThumb);
+        if (customRightThumb > 0) {
+            removeView(mRightThumb);
             mRightThumb = new CustomPinView(customRightThumb, rightAnchor, rightValListener, this);
-            //addView(mRightThumb);
+            addView(mRightThumb);
         } else {
             mRightThumb = new DefaultPinView(ctx);
             ((DefaultPinView) mRightThumb)
@@ -1040,50 +1089,49 @@ public class RangeBar extends View {
 
         float oldLeftPos = mLeftPos, oldRightPos = mRightPos;
         int leftTick = 0, rightTick = 0;
-        if (mIsRangeBar) {
-            if (drawTicks) {
-                leftTick = findTick4Pos(mLeftPos);
-                mLeftPos = findPos4Tick(leftTick);
-            }
-
-            mLeftThumb.setX(mLeftPos);
-            mLeftThumb.setPinValue(getLeftPinValue());
-        }
 
         if (drawTicks) {
+            leftTick = findTick4Pos(mLeftPos);
+            mLeftPos = findPos4Tick(leftTick);
+
             rightTick = findTick4Pos(mRightPos);
             mRightPos = findPos4Tick(rightTick);
         }
-        mRightThumb.setX(mRightPos);
+
+        if (mIsRangeBar) {
+            mLeftThumb.setAnchor(mLeftPos);
+            mLeftThumb.setPinValue(getLeftPinValue());
+        }
+
+        mRightThumb.setAnchor(mRightPos);
         mRightThumb.setPinValue(getRightPinValue());
 
-        // Call the listener.
-        if (oldLeftPos != mLeftPos || oldRightPos != mRightPos) {
-            if (mListener != null) {
-                float left = drawTicks ? leftTick : mLeftPos;
-                float right = drawTicks ? rightTick : mRightPos;
-                mListener.onRangeChangeListener(this, drawTicks,
-                        (int) left, (int) right,
-                        getLeftPinValue(),
-                        getRightPinValue());
-            }
+
+        if (mListener != null) {
+            float left = drawTicks ? leftTick : mLeftPos;
+            float right = drawTicks ? rightTick : mRightPos;
+            mListener.onRangeChangeListener(this, drawTicks,
+                    (int) left, (int) right,
+                    getLeftPinValue(),
+                    getRightPinValue());
         }
+
 
         invalidate();
     }
 
-    /**
-     * Get marginLeft in each of the public attribute methods.
-     *
-     * @return float marginLeft
-     */
-    private int getMarginLeft() {
-        return getPaddingLeft();
-    }
-
-    private int getMarginRight() {
-        return getPaddingRight();
-    }
+//    /**
+//     * Get marginLeft in each of the public attribute methods.
+//     *
+//     * @return float marginLeft
+//     */
+//    private int getMarginLeft() {
+//        return getPaddingLeft();
+//    }
+//
+//    private int getMarginRight() {
+//        return getPaddingRight();
+//    }
 
     /**
      * Get yPos in each of the public attribute methods.
@@ -1100,7 +1148,7 @@ public class RangeBar extends View {
      * @return float barLength
      */
     private int getBarLength() {
-        return (getWidth() - getMarginLeft() - getMarginRight());
+        return (getWidth() - getPaddingLeft() - getPaddingRight());
     }
 
     /**
@@ -1153,8 +1201,24 @@ public class RangeBar extends View {
             } else if (!mLeftThumb.isPressed() && mRightThumb.isInTargetZone(x, y)) {
 
                 pressPin(mRightThumb);
+            } else {
+                if(mLeftThumb.isPressed()){
+                    mLeftThumb.release();
+                }
+                if(mRightThumb.isPressed()){
+                    mRightThumb.release();
+                }
+
+                if(Math.abs(x - mLeftThumb.getAnchor()) < Math.abs(x - mRightThumb.getAnchor())){
+                    pressPin(mLeftThumb);
+                } else {
+                    pressPin(mRightThumb);
+                }
+
             }
+
         } else {
+
             if (mRightThumb.isInTargetZone(x, y)) {
                 pressPin(mRightThumb);
             }
@@ -1174,24 +1238,28 @@ public class RangeBar extends View {
         } else if (mRightThumb.isPressed()) {
             releasePin(mRightThumb);
         } else {
+            return;
+        }
 
-            float leftThumbXDistance = mIsRangeBar ? Math.abs(mLeftThumb.getX() - x) : 0;
-            float rightThumbXDistance = Math.abs(mRightThumb.getX() - x);
+        /*else {
+
+            float leftThumbXDistance = mIsRangeBar ? Math.abs(mLeftThumb.getAnchor() - x) : 0;
+            float rightThumbXDistance = Math.abs(mRightThumb.getAnchor() - x);
 
             if (leftThumbXDistance < rightThumbXDistance) {
                 if (mIsRangeBar) {
-                    mLeftThumb.setX(x);
+                    mLeftThumb.setAnchor(x);
                     releasePin(mLeftThumb);
                 }
             } else {
-                mRightThumb.setX(x);
+                mRightThumb.setAnchor(x);
                 releasePin(mRightThumb);
             }
 
-        }
+        }*/
 
-        mLeftPos = (int) mLeftThumb.getX();
-        mRightPos = (int) mRightThumb.getX();
+        mLeftPos = (int) mLeftThumb.getAnchor();
+        mRightPos = (int) mRightThumb.getAnchor();
 
         float left = mLeftPos, right = mRightPos;
         if (drawTicks) {
@@ -1199,8 +1267,8 @@ public class RangeBar extends View {
             right = findTick4Pos(mRightPos);
             mLeftPos = findPos4Tick((int) left);
             mRightPos = findPos4Tick((int) right);
-            mLeftThumb.setX(mLeftPos);
-            mRightThumb.setX(mRightPos);
+            mLeftThumb.setAnchor(mLeftPos);
+            mRightThumb.setAnchor(mRightPos);
         }
 
         mLeftThumb.setPinValue(getLeftPinValue());
@@ -1223,7 +1291,7 @@ public class RangeBar extends View {
 
         PinView leftPin = mLeftThumb, rightPin = mRightThumb;
 
-        if (isRangeBar() && mLeftThumb.getX() >= mRightThumb.getX()) {
+        if (isRangeBar() && mLeftThumb.getAnchor() >= mRightThumb.getAnchor()) {
             leftPin = mRightThumb;
             rightPin = mLeftThumb;
             if (mLeftThumb.isPressed()) {
@@ -1235,15 +1303,16 @@ public class RangeBar extends View {
             }
         }
 
-        // Move the pressed thumb to the new x-position.
+        velocityTracker.computeCurrentVelocity(1000, MAX_VELOCITY);
+        float vel = velocityTracker.getXVelocity();
         if (mIsRangeBar && leftPin.isPressed()) {
-            movePin(leftPin, x);
+            movePin(leftPin, x, vel);
         } else if (rightPin.isPressed()) {
-            movePin(rightPin, x);
+            movePin(rightPin, x, vel);
         }
 
-        int newLeftPos = mIsRangeBar ? (int) mLeftThumb.getX() : getMarginLeft();
-        int newRightPos = (int) mRightThumb.getX();
+        int newLeftPos = mIsRangeBar ? (int) mLeftThumb.getAnchor() : getPaddingLeft();
+        int newRightPos = (int) mRightThumb.getAnchor();
 
         /// end added code
         // If either of the indices have changed, update and call the listener.
@@ -1253,6 +1322,7 @@ public class RangeBar extends View {
             mRightPos = newRightPos;
 
             if (mIsRangeBar) {
+
                 leftPin.setPinValue(getLeftPinValue());
             }
             rightPin.setPinValue(getRightPinValue());
@@ -1276,11 +1346,11 @@ public class RangeBar extends View {
      */
     private void releasePin(final PinView thumb) {
         if (drawTicks) {
-            int leftTick = findTick4Pos(thumb.getX());
+            int leftTick = findTick4Pos(thumb.getAnchor());
             int newLeftPos = findPos4Tick(leftTick);
 
-            if (newLeftPos != (int) thumb.getX()) {
-                thumb.setX(newLeftPos);
+            if (newLeftPos != (int) thumb.getAnchor()) {
+                thumb.setAnchor(newLeftPos);
                 thumb.setPinValue(getPinValue(newLeftPos));
             }
         }
@@ -1297,7 +1367,7 @@ public class RangeBar extends View {
      */
 
     private float getPinValue(float pos) {
-        float delta = pos - getMarginLeft();
+        float delta = pos - getPaddingLeft();
         if (delta < 0) delta = 0;
 
         Float val = null;
@@ -1320,20 +1390,22 @@ public class RangeBar extends View {
     /**
      * Moves the thumb to the given x-coordinate.
      *
-     * @param thumb the thumb to move
-     * @param x     the x-coordinate to move the thumb to
+     * @param thumb    the thumb to move
+     * @param x        the x-coordinate to move the thumb to
+     * @param velocity the current moving velocity
      */
-    private void movePin(PinView thumb, float x) {
+    private void movePin(PinView thumb, float x, float velocity) {
         if (thumb == null) {
             return;
         }
-
+        //Log.w("Moving", "velocity:" + velocity);
+        thumb.setVelocity(velocity);
         if (x < mBar.getLeftX()) {
-            thumb.setX(mBar.getLeftX());
+            thumb.setAnchor(mBar.getLeftX());
         } else if (x > mBar.getRightX()) {
-            thumb.setX(mBar.getRightX());
+            thumb.setAnchor(mBar.getRightX());
         } else {
-            thumb.setX(x);
+            thumb.setAnchor(x);
             invalidate();
         }
     }
@@ -1366,42 +1438,43 @@ public class RangeBar extends View {
     }
 
 
-    View customLeftThumb, customRightThumb;
-    PinView.ValueChanged leftValListener, rightValListener;
+    int customLeftThumb, customRightThumb;
+    PinViewStateChangedListener leftValListener, rightValListener;
     int leftAnchor, rightAnchor;
 
     /**
      * set custom selectors
      *
-     * @param left  the left selector view; if not range bar , just set it null
-     * @param right the right selector view
+     * @param leftLayoutId  the left selector view; if not range bar , just set it null
+     * @param rightLayoutId the right selector view
      */
-    public void setCustomSelector(@Nullable View left, @Nullable PinView.ValueChanged leftValListener, @Nullable View right, @Nullable PinView.ValueChanged rightValListener) {
-        setCustomSelector(left, ANCHOR_CENTER, leftValListener, right, ANCHOR_CENTER, rightValListener);
+    public void setCustomSelector(int leftLayoutId, @Nullable PinViewStateChangedListener leftValListener, int rightLayoutId, @Nullable PinViewStateChangedListener rightValListener) {
+        setCustomSelector(leftLayoutId, ANCHOR_CENTER, leftValListener, rightLayoutId, ANCHOR_CENTER, rightValListener);
     }
 
 
-    public void setCustomSelector(@Nullable View left, int leftAnchor, @Nullable PinView.ValueChanged leftValListener, @Nullable View right, int rightAnchor, @Nullable PinView.ValueChanged rightValListener) {
-        customLeftThumb = left;
+    public void setCustomSelector(int leftLayoutId, int leftAnchor, @Nullable PinViewStateChangedListener leftValListener, int rightLayoutId, int rightAnchor, @Nullable PinViewStateChangedListener rightValListener) {
+        customLeftThumb = leftLayoutId;
         this.leftValListener = leftValListener;
         this.leftAnchor = leftAnchor;
-        customRightThumb = right;
+        customRightThumb = rightLayoutId;
         this.rightValListener = rightValListener;
         this.rightAnchor = rightAnchor;
 
-        createPins();
+        if (getWidth() > 0)
+            createPins();
     }
 
-    /**
-     * set the radius of  selector
-     *
-     * @param r radius of selector
-     */
-    public void setPinViewStubRadius(int r) {
-        defaultCircleSize = r;
-        createBar();
-
-    }
+//    /**
+//     * set the radius of  selector
+//     *
+//     * @param r radius of selector
+//     */
+//    public void setPinViewStubRadius(int r) {
+//        defaultCircleSize = r;
+//        createBar();
+//
+//    }
 
     public static int dp2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -1411,5 +1484,13 @@ public class RangeBar extends View {
     public static int px2dp(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return Math.round(pxValue / scale);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+//        if (mLeftThumb != null)
+//            mLeftThumb.updateLayout();
+//        if (mRightThumb != null)
+//            mRightThumb.updateLayout();
     }
 }

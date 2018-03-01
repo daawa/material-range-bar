@@ -21,13 +21,14 @@
         android:textSize="40sp"/>
 
     <com.appyvet.materialrangebar.RangeBar
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="30dp"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/rangebar1"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         app:mrb_barWeight="2dp"
+        app:mrb_drawTicks="false"
         app:mrb_connectingLineColorEnd="#fd2951"
         app:mrb_connectingLineColorStart="#ffc0cc"
         app:mrb_connectingLineWeight="4dp"
