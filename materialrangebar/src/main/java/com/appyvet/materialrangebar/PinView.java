@@ -37,8 +37,6 @@ public interface PinView {
 
      String getValue();
 
-     void updateLayout();
-
     /**
      * Determines if the input coordinate is close enough to this thumb to
      * consider it a press.

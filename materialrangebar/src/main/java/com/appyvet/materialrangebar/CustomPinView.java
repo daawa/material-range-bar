@@ -243,8 +243,8 @@ class CustomPinView extends FrameLayout implements PinView {
         return value;
     }
 
-    @Override
-    public void updateLayout() {
+    //@Override
+    private void updateLayout() {
         layoutCustomView(layoutWidth, widMode, layoutHeight, heightMode);
     }
 

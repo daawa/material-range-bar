@@ -23,6 +23,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -52,7 +53,7 @@ class DefaultPinView extends View implements PinView{
 
     // Member Variables ////////////////////////////////////////////////////////
 
-    private float mThumbRadiusDP = DEFAULT_EXPANDED_PIN_RADIUS_DP;
+    //private float mThumbRadiusDP = DEFAULT_EXPANDED_PIN_RADIUS_DP;
     private float mExpandedPinRadius = DEFAULT_EXPANDED_PIN_RADIUS_DP;
 
     boolean mArePinsTemporary = true;
@@ -149,15 +150,16 @@ class DefaultPinView extends View implements PinView{
         mCircleRadiusPx = circleRadius;
         mTextYPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3.5f,
                 mRes.getDisplayMetrics());
+
         // If one of the attributes are set, but the others aren't, set the
         // attributes to default
-        if (mExpandedPinRadius == -1) {
-            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_THUMB_RADIUS_DP,
-                    mRes.getDisplayMetrics());
-        } else {
-            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mExpandedPinRadius,
-                    mRes.getDisplayMetrics());
-        }
+//        if (mExpandedPinRadius == -1) {
+//            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_THUMB_RADIUS_DP,
+//                    mRes.getDisplayMetrics());
+//        } else {
+//            mPinRadiusPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mExpandedPinRadius,
+//                    mRes.getDisplayMetrics());
+//        }
         //Set text size in px from dp
         int textSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 15,
                 mRes.getDisplayMetrics());
@@ -244,10 +246,10 @@ class DefaultPinView extends View implements PinView{
         return mValue;
     }
 
-    @Override
-    public void updateLayout() {
-
-    }
+//    @Override
+//    public void updateLayout() {
+//
+//    }
 
     @Override
     public void setVelocity(float velocity) {
@@ -277,8 +279,8 @@ class DefaultPinView extends View implements PinView{
 
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    mThumbRadiusDP = (Float) (animation.getAnimatedValue());
-                    DefaultPinView.this.setSize(mThumbRadiusDP, PinPadding * animation.getAnimatedFraction());
+                    float tmpR = (Float) (animation.getAnimatedValue());
+                    DefaultPinView.this.setSize(tmpR, PinPadding * animation.getAnimatedFraction());
                     invalidate();
                 }
             });
@@ -297,7 +299,7 @@ class DefaultPinView extends View implements PinView{
      * @param size    the size of the pin radius
      * @param padding the size of the padding
      */
-    public void setSize(float size, float padding) {
+    private void setSize(float size, float padding) {
         tmpPinPadding = (int) padding;
         mPinRadiusPx = (int) size;
         invalidate();
@@ -312,12 +314,15 @@ class DefaultPinView extends View implements PinView{
 
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    mThumbRadiusDP = (Float) (animation.getAnimatedValue());
-                    DefaultPinView.this.setSize(mThumbRadiusDP,
+                    float tmpR = (Float) (animation.getAnimatedValue());
+                    //Log.w("Release", " radius:" + tmpR);
+                    DefaultPinView.this.setSize(tmpR,
                             PinPadding - (PinPadding * animation.getAnimatedFraction()));
                     invalidate();
                 }
+
             });
+
             animator.start();
         } else {
             invalidate();
@@ -347,7 +352,7 @@ class DefaultPinView extends View implements PinView{
 
         canvas.drawCircle(mX, mY, mCircleRadiusPx, mCirclePaint);
         //Draw pin if pressed
-        if (mPinRadiusPx > 0 && (mIsPressed)) {
+        if (mPinRadiusPx > 0 ) {
             mBounds.set((int) mX - mPinRadiusPx,
                     (int) mY - (mPinRadiusPx * 2) - (int) tmpPinPadding,
                     (int) mX + mPinRadiusPx, (int) mY - (int) tmpPinPadding);
