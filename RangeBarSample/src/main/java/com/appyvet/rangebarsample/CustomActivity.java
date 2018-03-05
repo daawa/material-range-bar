@@ -147,6 +147,7 @@ public class CustomActivity extends Activity {
         });
 
         rangebar.setTickConfig(5, 2000, 10);
+        rangebar.setRangePinsByValue( 500, 1500);
 //        rangebar.postDelayed(new Runnable() {
 //            @Override
 //            public void run() {

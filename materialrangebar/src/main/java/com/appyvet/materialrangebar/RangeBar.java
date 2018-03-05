@@ -165,8 +165,10 @@ public class RangeBar extends ViewGroup {
     private SparseArray<Float> mTickMap;
 
     private float mLeftPos;
-
     private float mRightPos;
+
+    private float mLeftValue;
+    private float mRightValue;
 
     private boolean mIsRangeBar = true;
 
@@ -249,8 +251,8 @@ public class RangeBar extends ViewGroup {
         bundle.putInt("BAR_PADDING_BOTTOM", mBarPaddingBottom);
         bundle.putBoolean("IS_RANGE_BAR", mIsRangeBar);
         bundle.putBoolean("ARE_PINS_TEMPORARY", mArePinsTemporary);
-        bundle.putFloat("LEFT_INDEX", mLeftPos);
-        bundle.putFloat("RIGHT_INDEX", mRightPos);
+        bundle.putFloat("LEFT_VALUE", mLeftValue);
+        bundle.putFloat("RIGHT_VALUE", mRightValue);
 
         //bundle.putBoolean("FIRST_SET_TICK_COUNT", mFirstSetTickCount);
 
@@ -282,9 +284,8 @@ public class RangeBar extends ViewGroup {
             mIsRangeBar = bundle.getBoolean("IS_RANGE_BAR");
             mArePinsTemporary = bundle.getBoolean("ARE_PINS_TEMPORARY");
 
-            mLeftPos = bundle.getFloat("LEFT_INDEX");
-            mRightPos = bundle.getFloat("RIGHT_INDEX");
-            //mFirstSetTickCount = bundle.getBoolean("FIRST_SET_TICK_COUNT");
+            mLeftValue = bundle.getFloat("LEFT_VALUE");
+            mRightValue = bundle.getFloat("RIGHT_VALUE");
             adjustPin();
             super.onRestoreInstanceState(bundle.getParcelable("instanceState"));
 
@@ -333,6 +334,9 @@ public class RangeBar extends ViewGroup {
 
         final Context ctx = getContext();
         final int barYPos = getYPos();
+
+        mLeftPos = findPos4Val(mLeftValue);
+        mRightPos = findPos4Val(mRightValue);
 
         if (mLeftPos <= 0) {
             mLeftPos = getPaddingLeft();
@@ -482,6 +486,8 @@ public class RangeBar extends ViewGroup {
             mTickStart = start;
             mTickEnd = end;
             mTickMap.clear();
+            mLeftValue  = mTickStart;
+            mRightValue = mTickEnd;
         } else {
             Log.e(TAG, "tickCount less than 2; invalid tickCount.");
             throw new IllegalArgumentException("tickCount less than 2; invalid tickCount.");
@@ -746,23 +752,27 @@ public class RangeBar extends ViewGroup {
                             + " is out of bounds. Check that it is greater than the minimum ("
                             + mTickStart + ") and less than the maximum value ("
                             + mTickEnd + ")");
+
             throw new IllegalArgumentException(
                     "Pin value left " + leftPinValue + ", or right " + rightPinValue
                             + " is out of bounds. Check that it is greater than the minimum ("
                             + mTickStart + ") and less than the maximum value ("
                             + mTickEnd + ")");
         } else {
-
-            mLeftPos = getPosition4Val(leftPinValue);
-            mRightPos = getPosition4Val(rightPinValue);
-
+            mLeftValue = leftPinValue;
+            mRightValue = rightPinValue;
+//            mLeftPos = findPos4Val(leftPinValue);
+//            mRightPos = findPos4Val(rightPinValue);
             adjustPin();
         }
 
     }
 
     private void adjustPin() {
-        if(mRightThumb == null) return;
+        if (mRightThumb == null) return;
+        mLeftPos = findPos4Val(mLeftValue);
+        mRightPos = findPos4Val(mRightValue);
+
         float left = mLeftPos, right = mRightPos;
         if (drawTicks) {
             left = findTick4Pos(mLeftPos);
@@ -788,8 +798,9 @@ public class RangeBar extends ViewGroup {
         }
     }
 
-    private float getPosition4Val(float val) {
+    private float findPos4Val(float val) {
         if (val < mTickStart) val = mTickStart;
+        if (val > mTickEnd) val = mTickEnd;
 
         float pos = ((val - mTickStart) / (mTickEnd - mTickStart) * getBarLength()) + getPaddingLeft();
 
@@ -951,13 +962,6 @@ public class RangeBar extends ViewGroup {
                 mLeftPos = getPaddingLeft();
                 mRightPos = getPaddingLeft() + getBarLength();
 
-//                float left = drawTicks ? 0 : mLeftPos;
-//                float right = drawTicks ? mTickCount - 1 : mRightPos;
-//                if (mListener != null) {
-//                    mListener.onRangeChangeListener(this, drawTicks,
-//                            (int) left, (int) right, tickStart, tickEnd);
-//                }
-
             } else {
 
                 Log.e(TAG, "tickCount less than 2; invalid tickCount. XML input ignored.");
@@ -1086,6 +1090,8 @@ public class RangeBar extends ViewGroup {
             ((DefaultPinView) mRightThumb)
                     .init(this, yPos, mPinColor, mTextColor, defaultCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
         }
+        mLeftPos = findPos4Val(mLeftValue);
+        mRightPos = findPos4Val(mRightValue);
 
         float oldLeftPos = mLeftPos, oldRightPos = mRightPos;
         int leftTick = 0, rightTick = 0;
@@ -1202,14 +1208,14 @@ public class RangeBar extends ViewGroup {
 
                 pressPin(mRightThumb);
             } else {
-                if(mLeftThumb.isPressed()){
+                if (mLeftThumb.isPressed()) {
                     mLeftThumb.release();
                 }
-                if(mRightThumb.isPressed()){
+                if (mRightThumb.isPressed()) {
                     mRightThumb.release();
                 }
 
-                if(Math.abs(x - mLeftThumb.getAnchor()) < Math.abs(x - mRightThumb.getAnchor())){
+                if (Math.abs(x - mLeftThumb.getAnchor()) < Math.abs(x - mRightThumb.getAnchor())) {
                     pressPin(mLeftThumb);
                 } else {
                     pressPin(mRightThumb);
@@ -1241,22 +1247,6 @@ public class RangeBar extends ViewGroup {
             return;
         }
 
-        /*else {
-
-            float leftThumbXDistance = mIsRangeBar ? Math.abs(mLeftThumb.getAnchor() - x) : 0;
-            float rightThumbXDistance = Math.abs(mRightThumb.getAnchor() - x);
-
-            if (leftThumbXDistance < rightThumbXDistance) {
-                if (mIsRangeBar) {
-                    mLeftThumb.setAnchor(x);
-                    releasePin(mLeftThumb);
-                }
-            } else {
-                mRightThumb.setAnchor(x);
-                releasePin(mRightThumb);
-            }
-
-        }*/
 
         mLeftPos = (int) mLeftThumb.getAnchor();
         mRightPos = (int) mRightThumb.getAnchor();
@@ -1322,10 +1312,12 @@ public class RangeBar extends ViewGroup {
             mRightPos = newRightPos;
 
             if (mIsRangeBar) {
-
-                leftPin.setPinValue(getLeftPinValue());
+                mLeftValue = getLeftPinValue();
+                leftPin.setPinValue(mLeftValue);
             }
-            rightPin.setPinValue(getRightPinValue());
+
+            mRightValue = getRightPinValue();
+            rightPin.setPinValue(mRightValue);
 
         }
 
