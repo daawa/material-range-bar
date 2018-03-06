@@ -1245,32 +1245,33 @@ public class RangeBar extends ViewGroup {
      * @param y the y-coordinate of the up action
      */
     private void onActionUp(float x, float y) {
+        float left = mLeftPos, right = mRightPos;
         if (mIsRangeBar && mLeftThumb.isPressed()) {
             releasePin(mLeftThumb);
+            mLeftPos = (int) mLeftThumb.getAnchor();
+
+            if (drawTicks) {
+                left = findTick4Pos(mLeftPos);
+                mLeftPos = findPos4Tick((int) left);
+                mLeftThumb.setAnchor(mLeftPos);
+            }
+            mLeftValue = getLeftPinValue();
+            mLeftThumb.setPinValue(mLeftValue);
         } else if (mRightThumb.isPressed()) {
             releasePin(mRightThumb);
+            mRightPos = (int) mRightThumb.getAnchor();
+
+            if (drawTicks) {
+                right = findTick4Pos(mRightPos);
+                mRightPos = findPos4Tick((int) right);
+                mRightThumb.setAnchor(mRightPos);
+            }
+            mRightValue = getRightPinValue();
+            mRightThumb.setPinValue(mRightValue);
         } else {
             return;
         }
 
-
-        mLeftPos = (int) mLeftThumb.getAnchor();
-        mRightPos = (int) mRightThumb.getAnchor();
-        mLeftValue = getLeftPinValue();
-        mRightValue = getRightPinValue();
-
-        float left = mLeftPos, right = mRightPos;
-        if (drawTicks) {
-            left = findTick4Pos(mLeftPos);
-            right = findTick4Pos(mRightPos);
-            mLeftPos = findPos4Tick((int) left);
-            mRightPos = findPos4Tick((int) right);
-            mLeftThumb.setAnchor(mLeftPos);
-            mRightThumb.setAnchor(mRightPos);
-        }
-
-        mLeftThumb.setPinValue(getLeftPinValue());
-        mRightThumb.setPinValue(getRightPinValue());
 
         if (mListener != null) {
             mListener.onRangeChangeListener(this, drawTicks, (int) left, (int) right, mLeftValue, mRightValue);
