@@ -670,20 +670,26 @@ public class RangeBar extends ViewGroup {
             throw new IllegalArgumentException(msg);
 
         } else {
-            mLeftPos = findPos4Tick(leftPinIndex);
-            mRightPos = findPos4Tick(rightPinIndex);
+            mLeftValue = findVal4Tick(leftPinIndex);
+            mRightValue = findVal4Tick(rightPinIndex);
 
             createPins();
 
             if (mListener != null) {
                 mListener.onRangeChangeListener(this, drawTicks,
                         leftPinIndex, rightPinIndex,
-                        getLeftPinValue(), getRightPinValue());
+                        mLeftValue, mRightValue);
             }
         }
 
         invalidate();
         requestLayout();
+    }
+
+    private float findVal4Tick(int tickIndex){
+        float len = mTickEnd - mTickStart;
+        float val = ((tickIndex * 1.0f) / (mTickCount - 1) * len) + mTickStart;
+        return val;
     }
 
     private int findPos4Tick(int tickIndex) {
@@ -726,13 +732,13 @@ public class RangeBar extends ViewGroup {
 
         } else {
 
-            mRightPos = findPos4Tick(pinIndex);
+            mRightValue = findVal4Tick(pinIndex);
             createPins();
 
             if (mListener != null) {
                 mListener.onRangeChangeListener(this, drawTicks,
                         getLeftTickIndex(), pinIndex,
-                        getLeftPinValue(), getRightPinValue());
+                        mLeftValue, mRightValue);
             }
         }
         invalidate();
@@ -793,8 +799,8 @@ public class RangeBar extends ViewGroup {
         if (mListener != null) {
             mListener.onRangeChangeListener(this, drawTicks,
                     (int) left, (int) right,
-                    getLeftPinValue(),
-                    getRightPinValue());
+                    mLeftValue,
+                    mRightValue);
         }
     }
 
@@ -1090,10 +1096,10 @@ public class RangeBar extends ViewGroup {
             ((DefaultPinView) mRightThumb)
                     .init(this, yPos, mPinColor, mTextColor, defaultCircleSize, mCircleColor, mCircleBoundaryColor, mCircleBoundarySize, mArePinsTemporary);
         }
+
         mLeftPos = findPos4Val(mLeftValue);
         mRightPos = findPos4Val(mRightValue);
 
-        float oldLeftPos = mLeftPos, oldRightPos = mRightPos;
         int leftTick = 0, rightTick = 0;
 
         if (drawTicks) {
@@ -1106,11 +1112,11 @@ public class RangeBar extends ViewGroup {
 
         if (mIsRangeBar) {
             mLeftThumb.setAnchor(mLeftPos);
-            mLeftThumb.setPinValue(getLeftPinValue());
+            mLeftThumb.setPinValue(mLeftValue);
         }
 
         mRightThumb.setAnchor(mRightPos);
-        mRightThumb.setPinValue(getRightPinValue());
+        mRightThumb.setPinValue(mRightValue);
 
 
         if (mListener != null) {
@@ -1118,8 +1124,8 @@ public class RangeBar extends ViewGroup {
             float right = drawTicks ? rightTick : mRightPos;
             mListener.onRangeChangeListener(this, drawTicks,
                     (int) left, (int) right,
-                    getLeftPinValue(),
-                    getRightPinValue());
+                    mLeftValue,
+                    mRightValue);
         }
 
 
@@ -1250,6 +1256,8 @@ public class RangeBar extends ViewGroup {
 
         mLeftPos = (int) mLeftThumb.getAnchor();
         mRightPos = (int) mRightThumb.getAnchor();
+        mLeftValue = getLeftPinValue();
+        mRightValue = getRightPinValue();
 
         float left = mLeftPos, right = mRightPos;
         if (drawTicks) {
@@ -1265,10 +1273,7 @@ public class RangeBar extends ViewGroup {
         mRightThumb.setPinValue(getRightPinValue());
 
         if (mListener != null) {
-            mListener.onRangeChangeListener(this, drawTicks,
-                    (int) left, (int) right,
-                    getLeftPinValue(),
-                    getRightPinValue());
+            mListener.onRangeChangeListener(this, drawTicks, (int) left, (int) right, mLeftValue, mRightValue);
         }
     }
 
