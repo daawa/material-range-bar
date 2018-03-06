@@ -486,7 +486,7 @@ public class RangeBar extends ViewGroup {
             mTickStart = start;
             mTickEnd = end;
             mTickMap.clear();
-            mLeftValue  = mTickStart;
+            mLeftValue = mTickStart;
             mRightValue = mTickEnd;
         } else {
             Log.e(TAG, "tickCount less than 2; invalid tickCount.");
@@ -686,7 +686,7 @@ public class RangeBar extends ViewGroup {
         requestLayout();
     }
 
-    private float findVal4Tick(int tickIndex){
+    private float findVal4Tick(int tickIndex) {
         float len = mTickEnd - mTickStart;
         float val = ((tickIndex * 1.0f) / (mTickCount - 1) * len) + mTickStart;
         return val;
@@ -1306,24 +1306,24 @@ public class RangeBar extends ViewGroup {
             movePin(rightPin, x, vel);
         }
 
-        int newLeftPos = mIsRangeBar ? (int) mLeftThumb.getAnchor() : getPaddingLeft();
-        int newRightPos = (int) mRightThumb.getAnchor();
-
-        /// end added code
         // If either of the indices have changed, update and call the listener.
-        if (newLeftPos != mLeftPos || newRightPos != mRightPos) {
-
-            mLeftPos = newLeftPos;
-            mRightPos = newRightPos;
-
-            if (mIsRangeBar) {
-                mLeftValue = getLeftPinValue();
-                leftPin.setPinValue(mLeftValue);
+        if (mIsRangeBar && mLeftThumb.isPressed()) {
+            int newLeftPos = mIsRangeBar ? (int) mLeftThumb.getAnchor() : getPaddingLeft();
+            if (newLeftPos != mLeftPos) {
+                mLeftPos = newLeftPos;
+                if (mIsRangeBar) {
+                    mLeftValue = getLeftPinValue();
+                    leftPin.setPinValue(mLeftValue);
+                }
             }
+        } else if (mRightThumb.isPressed()) {
+            int newRightPos = (int) mRightThumb.getAnchor();
+            if (newRightPos != mRightPos) {
+                mRightPos = newRightPos;
+                mRightValue = getRightPinValue();
+                rightPin.setPinValue(mRightValue);
 
-            mRightValue = getRightPinValue();
-            rightPin.setPinValue(mRightValue);
-
+            }
         }
 
         invalidate();
