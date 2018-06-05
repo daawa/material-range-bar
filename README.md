@@ -10,8 +10,12 @@
     定制的view 是始终垂直居中的； 可通过调整view的内部结构以及 underlying-bar 的 padding-bottom 值来设置其相对位置
     
 
-<video width="240" height="420" src="https://raw.githubusercontent.com/daawa/notes/master/files/device-2018-06-05-104933.mp4" controls="controls">
-    您的浏览器不支持 video 标签。
+<video src="/i/movie.ogg" controls="controls">
+your browser does not support the video tag
+</video>
+
+<video src="https://raw.githubusercontent.com/daawa/notes/master/files/device-2018-06-05-104933.mp4" controls="controls">
+your browser does not support the video tag
 </video>
 
     
