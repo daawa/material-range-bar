@@ -9,9 +9,12 @@
 
     定制的view 是始终垂直居中的； 可通过调整view的内部结构以及 underlying-bar 的 padding-bottom 值来设置其相对位置
     
-    <video width="240" height="420" controls>
-        <source src="https://raw.githubusercontent.com/daawa/notes/master/files/device-2018-06-05-104933.mp4" type="video/mp4">
-    </video>
+
+<video width="240" height="420" controls>
+    <source src="https://raw.githubusercontent.com/daawa/notes/master/files/device-2018-06-05-104933.mp4" type="video/mp4">
+</video>
+
+video
     
 
 MaterialRangeBar
